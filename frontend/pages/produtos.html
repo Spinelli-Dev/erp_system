@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos</title>
+
+    <!-- VINCULANDO AO BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- VINCULANDO AO .CSS -->
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/componentes.css">
+
+    <!-- IMPORTANDO FONTE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gravitas+One&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playwrite+IE:wght@100..400&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/images/login-logo-formulario.png">
+</head>
+
+<body>
+
+    <!-- CARREGANDO O MENU VIA JAVASCRIPT -->
+    <div id="header-placeholder"></div>
+
+    <main class="conteudo-pagina flex-grow-1">
+        <!-- HEADER PADRÃO -->
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="titulo-pagina mb-0">Produtos</h2>
+            <!-- Data atualizada Tablet/Desktop: Aparece apenas para telas maiores -->
+            <span id="data-atual" class="data-pagina"></span>
+        </header>
+
+
+
+        <!-- TOOLBAR: Busca e Botão -->
+        <div class="toolbar-produtos">
+            <div class="search-wrapper">
+                <img src="../assets/icons/icone-pesquisar.svg" class="search-icon" alt="Lupa">
+                <input type="text" class="search-input" placeholder="Buscar por nome do produto ou sabor...">
+            </div>
+            
+            <button class="btn-novo" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                + NOVO
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO  DESKTOP (TABELA) -->
+        <!-- ========================================== -->
+        <div class="table-responsive d-none d-lg-block mb-4 tabela-container">
+            <table class="tabela-produtos tabela-custom">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th id="th-produto" style="cursor:pointer; user-select: none;">Produto <span>↕</span></th>
+                        <th>Sabor</th>
+                        <th>Peso</th>
+                        <th>Tipo</th>
+                        <th>Custo</th>
+                        <th>Preço</th>
+                        <th>Obs</th>
+                        <th class="text-center">Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="col-num">1</td>
+                        <td class="col-prod">Canelone</td>
+                        <td>4 Queijos</td>
+                        <td>700g</td>
+                        <td>Massas</td>
+                        <td>R$ 21,90</td>
+                        <td class="col-preco">R$ 39,90</td>
+                        <td>—</td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalProduto"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">2</td>
+                        <td class="col-prod">Canelone</td>
+                        <td>Brócolis e Mussarela</td>
+                        <td>700g</td>
+                        <td>Massas</td>
+                        <td>R$ 18,90</td>
+                        <td class="col-preco">R$ 39,90</td>
+                        <td>—</td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalProduto"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">3</td>
+                        <td class="col-prod">Canelone</td>
+                        <td>Frango e Requeijão</td>
+                        <td>700g</td>
+                        <td>Massas</td>
+                        <td>R$ 18,90</td>
+                        <td class="col-preco">R$ 39,90</td>
+                        <td>—</td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalProduto"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">4</td>
+                        <td class="col-prod">Massa de Lasanha</td>
+                        <td>—</td>
+                        <td>500g</td>
+                        <td>Massas</td>
+                        <td>R$ 7,00</td>
+                        <td class="col-preco">R$ 12,00</td>
+                        <td>—</td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalProduto"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">5</td>
+                        <td class="col-prod">Sofieli</td>
+                        <td>4 Queijos</td>
+                        <td>700g</td>
+                        <td>Massas</td>
+                        <td>R$ 21,90</td>
+                        <td class="col-preco">R$ 39,90</td>
+                        <td>—</td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalProduto"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">6</td>
+                        <td class="col-prod">Sofioli</td>
+                        <td>Brócolis e Mussarela</td>
+                        <td>700g</td>
+                        <td>Massas</td>
+                        <td>R$ 18,90</td>
+                        <td class="col-preco">R$ 39,90</td>
+                        <td>—</td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalProduto"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">7</td>
+                        <td class="col-prod">Sofioli</td>
+                        <td>Frango e Requeijão</td>
+                        <td>700g</td>
+                        <td>Massas</td>
+                        <td>R$ 18,90</td>
+                        <td class="col-preco">R$ 39,90</td>
+                        <td>—</td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalProduto"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">8</td>
+                        <td class="col-prod">Sofioli</td>
+                        <td>Presunto e Mussarela</td>
+                        <td>700g</td>
+                        <td>Massas</td>
+                        <td>R$ 18,90</td>
+                        <td class="col-preco">R$ 39,90</td>
+                        <td>—</td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalProduto"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">9</td>
+                        <td class="col-prod">Molho</td>
+                        <td>Tomate Tradicional</td>
+                        <td>300g</td>
+                        <td>Molhos</td>
+                        <td>R$ 1,10</td>
+                        <td class="col-preco">R$ 2,50</td>
+                        <td>Não trabalhamos mais</td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalProduto"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">10</td>
+                        <td class="col-prod">Molho</td>
+                        <td>Branco</td>
+                        <td>240g</td>
+                        <td>Molhos</td>
+                        <td>R$ 3,02</td>
+                        <td class="col-preco">R$ 5,90</td>
+                        <td>—</td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalProduto"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">11</td>
+                        <td class="col-prod">Molho</td>
+                        <td>Especial Sacciali Arrabiata</td>
+                        <td>530g</td>
+                        <td>Molhos</td>
+                        <td>R$ 9,60</td>
+                        <td class="col-preco">R$ 16,90</td>
+                        <td>—</td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalProduto"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">12</td>
+                        <td class="col-prod">Queijo Ralado</td>
+                        <td>—</td>
+                        <td>40g</td>
+                        <td>Outros</td>
+                        <td>R$ 2,79</td>
+                        <td class="col-preco">R$ 5,50</td>
+                        <td>—</td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalProduto"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- VERSÃO MOBILE (CARDS) -->
+        <!-- ========================================== -->
+        <div class="d-flex flex-column gap-3 d-lg-none mb-4">
+            
+            <!-- 1º Card -->
+            <div class="card-produto">
+                <div class="card-prod-left">
+                    <span class="m-prod">Canelone</span>
+                    <span class="m-sabor">4 Queijos</span>
+                    <span class="m-peso-tipo">700g • Massas</span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                        <img src="../assets/icons/icone-edicao.svg" alt="Editar">
+                    </button>
+                    <span class="m-sabor">Custo: R$ 21,90</span>
+                    <span class="m-preco">R$ 39,90</span>
+                </div>
+            </div>
+
+            <!-- 2º Card -->
+            <div class="card-produto">
+                <div class="card-prod-left">
+                    <span class="m-prod">Canelone</span>
+                    <span class="m-sabor">Brócolis e Mussarela</span>
+                    <span class="m-peso-tipo">700g • Massas</span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                        <img src="../assets/icons/icone-edicao.svg" alt="Editar">
+                    </button>
+                    <span class="m-sabor">Custo: R$ 18,90</span>
+                    <span class="m-preco">R$ 39,90</span>
+                </div>
+            </div>
+
+            <!-- 3º Card -->
+            <div class="card-produto">
+                <div class="card-prod-left">
+                    <span class="m-prod">Canelone</span>
+                    <span class="m-sabor">Frango e Requeijão</span>
+                    <span class="m-peso-tipo">700g • Massas</span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                        <img src="../assets/icons/icone-edicao.svg" alt="Editar">
+                    </button>
+                    <span class="m-sabor">Custo: R$ 18,90</span>
+                    <span class="m-preco">R$ 39,90</span>
+                </div>
+            </div>
+
+            <!-- 4º Card -->
+            <div class="card-produto">
+                <div class="card-prod-left">
+                    <span class="m-prod">Massa de Lasanha</span>
+                    <span class="m-sabor">—</span>
+                    <span class="m-peso-tipo">500g • Massas</span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                        <img src="../assets/icons/icone-edicao.svg" alt="Editar">
+                    </button>
+                    <span class="m-sabor">Custo: R$ 7,00</span>
+                    <span class="m-preco">R$ 12,00</span>
+                </div>
+            </div>
+
+            <!-- 5º Card -->
+            <div class="card-produto">
+                <div class="card-prod-left">
+                    <span class="m-prod">Sofieli</span>
+                    <span class="m-sabor">4 Queijos</span>
+                    <span class="m-peso-tipo">700g • Massas</span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                        <img src="../assets/icons/icone-edicao.svg" alt="Editar">
+                    </button>
+                    <span class="m-sabor">Custo: R$ 21,90</span>
+                    <span class="m-preco">R$ 39,90</span>
+                </div>
+            </div>
+
+            <!-- 6º Card -->
+            <div class="card-produto">
+                <div class="card-prod-left">
+                    <span class="m-prod">Sofioli</span>
+                    <span class="m-sabor">Brócolis e Mussarela</span>
+                    <span class="m-peso-tipo">700g • Massas</span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                        <img src="../assets/icons/icone-edicao.svg" alt="Editar">
+                    </button>
+                    <span class="m-sabor">Custo: R$ 18,90</span>
+                    <span class="m-preco">R$ 39,90</span>
+                </div>
+            </div>
+
+            <!-- 7º Card -->
+            <div class="card-produto">
+                <div class="card-prod-left">
+                    <span class="m-prod">Sofioli</span>
+                    <span class="m-sabor">Frango e Requeijão</span>
+                    <span class="m-peso-tipo">700g • Massas</span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                        <img src="../assets/icons/icone-edicao.svg" alt="Editar">
+                    </button>
+                    <span class="m-sabor">Custo: R$ 18,90</span>
+                    <span class="m-preco">R$ 39,90</span>
+                </div>
+            </div>
+
+            <!-- 8º Card -->
+            <div class="card-produto">
+                <div class="card-prod-left">
+                    <span class="m-prod">Sofioli</span>
+                    <span class="m-sabor">Presunto e Mussarela</span>
+                    <span class="m-peso-tipo">700g • Massas</span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                        <img src="../assets/icons/icone-edicao.svg" alt="Editar">
+                    </button>
+                    <span class="m-sabor">Custo: R$ 18,90</span>
+                    <span class="m-preco">R$ 39,90</span>
+                </div>
+            </div>
+
+            <!-- 9º Card -->
+            <div class="card-produto">
+                <div class="card-prod-left">
+                    <span class="m-prod">Molho</span>
+                    <span class="m-sabor">Tomate Tradicional</span>
+                    <span class="m-peso-tipo">300g • Molhos</span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                        <img src="../assets/icons/icone-edicao.svg" alt="Editar">
+                    </button>
+                    <span class="m-sabor">Custo: R$ 1,10</span>
+                    <span class="m-preco">R$ 2,50</span>
+                </div>
+            </div>
+
+            <!-- 10º Card -->
+            <div class="card-produto">
+                <div class="card-prod-left">
+                    <span class="m-prod">Molho</span>
+                    <span class="m-sabor">Branco</span>
+                    <span class="m-peso-tipo">240g • Molhos</span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                        <img src="../assets/icons/icone-edicao.svg" alt="Editar">
+                    </button>
+                    <span class="m-sabor">Custo: R$ 3,02</span>
+                    <span class="m-preco">R$ 5,90</span>
+                </div>
+            </div>
+
+            <!-- 11º Card -->
+            <div class="card-produto">
+                <div class="card-prod-left">
+                    <span class="m-prod">Molho</span>
+                    <span class="m-sabor">Especial Sacciali Arrabiata</span>
+                    <span class="m-peso-tipo">530g • Molhos</span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                        <img src="../assets/icons/icone-edicao.svg" alt="Editar">
+                    </button>
+                    <span class="m-sabor">Custo: R$ 9,60</span>
+                    <span class="m-preco">R$ 16,90</span>
+                </div>
+            </div>
+
+            <!-- 12º Card -->
+            <div class="card-produto">
+                <div class="card-prod-left">
+                    <span class="m-prod">Queijo Ralado</span>
+                    <span class="m-sabor">—</span>
+                    <span class="m-peso-tipo">40g • Outros</span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                        <img src="../assets/icons/icone-edicao.svg" alt="Editar">
+                    </button>
+                    <span class="m-sabor">Custo: R$ 2,79</span>
+                    <span class="m-preco">R$ 5,50</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="rodape mt-auto">
+        <p>Maxi Massas Itápolis • Sistema de Gestão v1.0</p>
+    </footer>
+
+    <!-- Modal de Produto (Unificado) -->
+    <div class="modal fade" id="modalProduto" tabindex="-1" aria-hidden="true">
+        <!-- A classe modal-dialog-bottom ativa o comportamento de surgir do chão no mobile -->
+        <!-- max-width: 600px no style para garantir um limite no Desktop -->
+        <div class="modal-dialog modal-dialog-centered modal-dialog-bottom" style="max-width: 600px;">
+            <div class="modal-content modal-custom-content">
+                
+                <div class="modal-header modal-header-custom d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title-custom mb-0" id="tituloModalProduto">Cadastrar Produto</h5>
+                    <!-- Botão 'X' para fechar o modal -->
+                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button> -->
+                </div>
+                
+                <div class="modal-body p-0">
+                    <form id="formProduto">
+                        <!-- row-gap-custom dá o espaçamento vertical -->
+                        <div class="row row-gap-custom m-0">
+                            
+                            <!-- 1ª Linha: Nome -->
+                            <div class="col-12 p-0">
+                                <label class="form-label-custom">Nome *</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputNome" placeholder="Ex: Canelone" required>
+                            </div>
+                            
+                            <!-- 2ª Linha: Sabor -->
+                            <div class="col-12 p-0">
+                                <label class="form-label-custom">Sabor</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputSabor" placeholder="Ex: Brócolis">
+                            </div>
+
+                            <!-- 3ª Linha: Peso e Custo (50/50 sempre) -->
+                            <div class="col-6 ps-0 pe-2">
+                                <label class="form-label-custom">Peso *</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputPeso" placeholder="Ex: 250g" required>
+                            </div>
+                            <div class="col-6 pe-0 ps-2">
+                                <label class="form-label-custom">Custo *</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputCusto" placeholder="Ex: R$ 18,90" required>
+                            </div>
+
+                            <!-- 4ª e 5ª Linhas: Preço, Estoque, Tipo -->
+                            <!-- No PC: os três ficam na mesma linha (col-md-4). No Mobile: Preço e Estoque dividem (col-6), e o Tipo ocupa tudo (col-12) na linha abaixo -->
+                            <div class="col-6 col-md-4 ps-0 pe-2">
+                                <label class="form-label-custom">Preço *</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputPreco" placeholder="Ex: R$ 39,90" required>
+                            </div>
+                            <div class="col-6 col-md-4 px-md-2 pe-0 ps-2">
+                                <label class="form-label-custom">Estoque *</label>
+                                <input type="number" class="form-control form-control-custom w-100" id="inputEstoque" placeholder="Ex: 10" required>
+                            </div>
+                            <div class="col-12 col-md-4 px-0 ps-md-2 mt-3 mt-md-0">
+                                <label class="form-label-custom">Tipo *</label>
+                                <!-- form-select adiciona a setinha padrão automaticamente -->
+                                <select class="form-control form-control-custom w-100 form-select" id="inputTipo" required>
+                                    <option value="" disabled selected>Massas, Molhos...</option>
+                                    <option value="Massas">Massas</option>
+                                    <option value="Molhos">Molhos</option>
+                                    <option value="Bebidas">Bebidas</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                            </div>
+
+                            <!-- 6ª Linha: Observações -->
+                            <div class="col-12 p-0 mt-3 mt-md-0">
+                                <label class="form-label-custom">Observações</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputObs" placeholder="Ex: Produto vegano">
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="modal-footer modal-footer-custom">
+                    <button type="button" class="btn-cancelar-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formProduto" class="btn-salvar-custom">Salvar</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+
+    <script src="../js/header.js"></script>
+    <script src="../js/data-atual.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>

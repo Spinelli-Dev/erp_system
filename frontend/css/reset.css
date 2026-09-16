@@ -1,0 +1,41 @@
+/* RESET E CONFIGURAÇÕES GLOBAIS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #FFFDF7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/*  Margens de 24px superior e 48px laterais */
+.conteudo-pagina {
+    padding-top: 24px;
+    padding-left: 48px;
+    padding-right: 48px;
+    flex: 1; /* Faz o conteúdo empurrar o footer para baixo */
+}
+
+/* Responsividade: No mobile as margens laterais diminuem para 15px */
+@media (max-width: 768px) {
+    .conteudo-pagina {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+/* Footer padrão para todas as páginas */
+.rodape {
+    padding: 20px 0;
+    text-align: center;
+    color: #6B7280;
+    font-size: 0.75rem;
+    background-color: #FFFDF7;
+    /* border-top: 1px solid #e0e0e0;
+    background-color: #f8f9fa; */
+}

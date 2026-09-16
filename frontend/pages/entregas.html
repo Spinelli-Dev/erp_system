@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entregas</title>
+    
+    <!-- VINCULANDO AO BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- VINCULANDO AO .CSS -->
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/componentes.css">
+
+    <!-- IMPORTANDO FONTE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gravitas+One&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playwrite+IE:wght@100..400&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/images/login-logo-formulario.png">
+</head>
+
+<body>
+
+    <!-- CARREGANDO O MENU VIA JAVASCRIPT -->
+    <div id="header-placeholder"></div>
+
+    <main class="conteudo-pagina flex-grow-1">
+        <!-- HEADER PADRÃO -->
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="titulo-pagina mb-0">Entregas</h2>
+            <!-- Data atualizada Tablet/Desktop: Aparece apenas para telas maiores -->
+            <span id="data-atual" class="data-pagina d-none d-md-block"></span>
+        </header>
+
+        <!-- FILTROS SUPERIORES (Estilo reaproveitado do Estoque) -->
+        <div class="container-filtros-entregas d-flex flex-wrap gap-2 mb-3">
+            <select class="filtro-select" id="filtroMesEntregas">
+                <option value="">Mês</option>
+                <option value="01">Janeiro</option>
+                <option value="02">Fevereiro</option>
+                <option value="03">Março</option>
+                <option value="04">Abril</option>
+            </select>
+
+            <select class="filtro-select" id="filtroAnoEntregas">
+                <option value="">Ano</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+            </select>
+
+            <select class="filtro-select" id="filtroStatusEntregas">
+                <option value="">Status</option>
+                <option value="Concluído">Concluído</option>
+                <option value="Pendente">Pendente</option>
+                <option value="Cancelado">Cancelado</option>
+            </select>
+        </div>
+
+        <!-- TOOLBAR: Busca e Botão Taxa -->
+        <div class="toolbar-produtos">
+            <div class="search-wrapper">
+                <img src="../assets/icons/icone-pesquisar.svg" class="search-icon" alt="Lupa">
+                <input type="text" class="search-input" id="buscaEntrega" placeholder="Buscar por cliente, endereço...">
+            </div>
+            
+            <button class="btn-novo btn-taxa" data-bs-toggle="modal" data-bs-target="#modalTaxa">
+                PEDIDO MÍNIMO E TAXA DE ENTREGA
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO DESKTOP (TABELA) -->
+        <!-- ========================================== -->
+        <div class="table-responsive d-none d-lg-block mb-4 tabela-container">
+            <!-- Reaproveitando classes da tabela de clientes para scroll -->
+            <table class="tabela-produtos tabela-clientes w-100 tabela-custom">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th class="coluna-ordenavel">Cliente <span>↕</span></th>
+                        <th class="coluna-ordenavel">Data <span>↕</span></th>
+                        <th>Hora</th>
+                        <th>Rua</th>
+                        <th>Nº</th>
+                        <th>Bairro</th>
+                        <th>Comp.</th>
+                        <th>Cidade</th>
+                        <th>Itens</th>
+                        <th>Taxa de Entrega</th>
+                        <th>Valor</th>
+                        <th class="coluna-ordenavel">Status <span>↕</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="col-num">1</td>
+                        <td class="col-prod">Maria Fernanda Costa</td>
+                        <td>25/04/2026</td>
+                        <td>11:30</td>
+                        <td>Rua das Flores</td>
+                        <td>142</td>
+                        <td>Jardim Europa</td>
+                        <td>—</td>
+                        <td>Itápolis</td>
+                        <td>1</td>
+                        <td>R$ 5,00</td>
+                        <td class="col-preco">R$ 41,00</td>
+                        <td class="status-entrega-text">Concluído</td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">2</td>
+                        <td class="col-prod">João Paulo Souza</td>
+                        <td>25/04/2026</td>
+                        <td>14:30</td>
+                        <td>Av. Brasil</td>
+                        <td>890</td>
+                        <td>Centro</td>
+                        <td>Apto. 24</td>
+                        <td>Itápolis</td>
+                        <td>2</td>
+                        <td>—</td>
+                        <td class="col-preco">R$ 67,00</td>
+                        <td class="status-entrega-text">Concluído</td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">3</td>
+                        <td class="col-prod">Ana Claudia Ribeiro</td>
+                        <td>25/04/2026</td>
+                        <td>15:00</td>
+                        <td>Rua Marechal</td>
+                        <td>55</td>
+                        <td>Vila Nova</td>
+                        <td>—</td>
+                        <td>Itápolis</td>
+                        <td>4</td>
+                        <td>R$ 7,00</td>
+                        <td class="col-preco">R$ 151,00</td>
+                        <td class="status-entrega-text">Pendente</td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">4</td>
+                        <td class="col-prod">Carlos Eduardo Lima</td>
+                        <td>24/04/2026</td>
+                        <td>10:30</td>
+                        <td>Rua 7 de Setembro</td>
+                        <td>320</td>
+                        <td>Bela Vista</td>
+                        <td>—</td>
+                        <td>Ibitinga</td>
+                        <td>2</td>
+                        <td>R$ 5,00</td>
+                        <td class="col-preco">R$ 68,00</td>
+                        <td class="status-entrega-text">Concluído</td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">5</td>
+                        <td class="col-prod">Fernanda Oliveira</td>
+                        <td>24/04/2026</td>
+                        <td>20:00</td>
+                        <td>Alameda Santos</td>
+                        <td>78</td>
+                        <td>Jd. América</td>
+                        <td>Fundos</td>
+                        <td>Jaboticabal</td>
+                        <td>2</td>
+                        <td>R$ 7,00</td>
+                        <td class="col-preco">R$ 89,00</td>
+                        <td class="status-entrega-text">Pendente</td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">6</td>
+                        <td class="col-prod">Roberto Alves Santos</td>
+                        <td>24/04/2026</td>
+                        <td>19:15</td>
+                        <td>R. XV de Novembro</td>
+                        <td>456</td>
+                        <td>Centro</td>
+                        <td>—</td>
+                        <td>Itápolis</td>
+                        <td>3</td>
+                        <td>—</td>
+                        <td class="col-preco">R$ 122,00</td>
+                        <td class="status-entrega-text">Pendente</td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">7</td>
+                        <td class="col-prod">Patricia Gomes Silva</td>
+                        <td>24/04/2026</td>
+                        <td>18:45</td>
+                        <td>Rua das Acácias</td>
+                        <td>33</td>
+                        <td>Vila Rica</td>
+                        <td>—</td>
+                        <td>Itápolis</td>
+                        <td>1</td>
+                        <td>R$ 5,00</td>
+                        <td class="col-preco">R$ 39,00</td>
+                        <td class="status-entrega-text">Concluído</td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">8</td>
+                        <td class="col-prod">Lucas Martins</td>
+                        <td>24/04/2026</td>
+                        <td>14:00</td>
+                        <td>Av. Paulista</td>
+                        <td>1200</td>
+                        <td>Centro</td>
+                        <td>Sala 5</td>
+                        <td>Itápolis</td>
+                        <td>3</td>
+                        <td>R$ 5,00</td>
+                        <td class="col-preco">R$ 91,00</td>
+                        <td class="status-entrega-text">Pendente</td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">9</td>
+                        <td class="col-prod">Beatriz Souza Lima</td>
+                        <td>23/04/2026</td>
+                        <td>12:20</td>
+                        <td>R. J. Nabuco</td>
+                        <td>88</td>
+                        <td>Jd. Bela Vista</td>
+                        <td>—</td>
+                        <td>Frutal</td>
+                        <td>6</td>
+                        <td>—</td>
+                        <td class="col-preco">R$ 234,00</td>
+                        <td class="status-entrega-text">Concluído</td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">10</td>
+                        <td class="col-prod">Andréia Ferreira</td>
+                        <td>23/04/2026</td>
+                        <td>12:00</td>
+                        <td>R. Castelo Branco</td>
+                        <td>200</td>
+                        <td>Residencial</td>
+                        <td>Apto. 12</td>
+                        <td>Itápolis</td>
+                        <td>7</td>
+                        <td>—</td>
+                        <td class="col-preco">R$ 222,00</td>
+                        <td class="status-entrega-text">Concluído</td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">11</td>
+                        <td class="col-prod">Pedro Henrique Costa</td>
+                        <td>23/04/2026</td>
+                        <td>13:30</td>
+                        <td>R. Tiradentes</td>
+                        <td>67</td>
+                        <td>Centro</td>
+                        <td>—</td>
+                        <td>Itápolis</td>
+                        <td>8</td>
+                        <td>R$ 7,00</td>
+                        <td class="col-preco">R$ 301,00</td>
+                        <td class="status-entrega-text">Concluído</td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">12</td>
+                        <td class="col-prod">Isabela Rodrigues</td>
+                        <td>23/04/2026</td>
+                        <td>12:30</td>
+                        <td>Av. Independência</td>
+                        <td>340</td>
+                        <td>Jd. Esperança</td>
+                        <td>—</td>
+                        <td>Itápolis</td>
+                        <td>1</td>
+                        <td>—</td>
+                        <td class="col-preco">R$ 21,00</td>
+                        <td class="status-entrega-text">Concluído</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO MOBILE (CARDS) -->
+        <!-- ========================================== -->
+        <div class="d-flex flex-column gap-3 d-lg-none mb-4 container-cards-entregas">
+            
+            <!-- Card 1 -->
+            <div class="card-entrega">
+                <div class="card-entrega-left">
+                    <span class="m-entrega-nome">Maria Fernanda Costa</span>
+                    <span class="m-entrega-data">25/04/2026  •  11:30</span>
+                    <span class="m-entrega-data">Rua das Flores, 142 — Jardim Europa</span>
+                    <span class="m-entrega-val">Taxa: R$ 5,00  •  <span style="font-weight: 600;">R$ 41,00</span></span>
+                </div>
+                <div class="card-entrega-right">
+                    <span class="m-entrega-itens">1 item</span>
+                    <span class="status-entrega-text">Concluído</span>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card-entrega">
+                <div class="card-entrega-left">
+                    <span class="m-entrega-nome">João Paulo Souza</span>
+                    <span class="m-entrega-data">25/04/2026  •  14:30</span>
+                    <span class="m-entrega-data">Av. Brasil, 890 — Centro</span>
+                    <span class="m-entrega-val">Taxa: —  •  <span style="font-weight: 600;">R$ 67,00</span></span>
+                </div>
+                <div class="card-entrega-right">
+                    <span class="m-entrega-itens">2 itens</span>
+                    <span class="status-entrega-text">Concluído</span>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card-entrega">
+                <div class="card-entrega-left">
+                    <span class="m-entrega-nome">Ana Claudia Ribeiro</span>
+                    <span class="m-entrega-data">25/04/2026  •  15:00</span>
+                    <span class="m-entrega-data">Rua Marechal, 55 — Vila Nova</span>
+                    <span class="m-entrega-val">Taxa: R$ 7,00  •  <span style="font-weight: 600;">R$ 151,00</span></span>
+                </div>
+                <div class="card-entrega-right">
+                    <span class="m-entrega-itens">4 itens</span>
+                    <span class="status-entrega-text">Pendente</span>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card-entrega">
+                <div class="card-entrega-left">
+                    <span class="m-entrega-nome">Carlos Eduardo Lima</span>
+                    <span class="m-entrega-data">24/04/2026  •  10:30</span>
+                    <span class="m-entrega-data">Rua 7 de Setembro, 320 — Bela Vista</span>
+                    <span class="m-entrega-val">Taxa: R$ 5,00  •  <span style="font-weight: 600;">R$ 68,00</span></span>
+                </div>
+                <div class="card-entrega-right">
+                    <span class="m-entrega-itens">2 itens</span>
+                    <span class="status-entrega-text">Concluído</span>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="card-entrega">
+                <div class="card-entrega-left">
+                    <span class="m-entrega-nome">Fernanda Oliveira</span>
+                    <span class="m-entrega-data">24/04/2026  •  20:00</span>
+                    <span class="m-entrega-data">Alameda Santos, 78 — Jd. América</span>
+                    <span class="m-entrega-val">Taxa: R$ 7,00  •  <span style="font-weight: 600;">R$ 89,00</span></span>
+                </div>
+                <div class="card-entrega-right">
+                    <span class="m-entrega-itens">2 itens</span>
+                    <span class="status-entrega-text">Pendente</span>
+                </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="card-entrega">
+                <div class="card-entrega-left">
+                    <span class="m-entrega-nome">Roberto Alves Santos</span>
+                    <span class="m-entrega-data">24/04/2026  •  19:15</span>
+                    <span class="m-entrega-data">R. XV de Novembro, 456 — Centro</span>
+                    <span class="m-entrega-val">Taxa: —  •  <span style="font-weight: 600;">R$ 122,00</span></span>
+                </div>
+                <div class="card-entrega-right">
+                    <span class="m-entrega-itens">3 itens</span>
+                    <span class="status-entrega-text">Pendente</span>
+                </div>
+            </div>
+
+            <!-- Card 7 -->
+            <div class="card-entrega">
+                <div class="card-entrega-left">
+                    <span class="m-entrega-nome">Patricia Gomes Silva</span>
+                    <span class="m-entrega-data">24/04/2026  •  18:45</span>
+                    <span class="m-entrega-data">Rua das Acácias, 33 — Vila Rica</span>
+                    <span class="m-entrega-val">Taxa: R$ 5,00  •  <span style="font-weight: 600;">R$ 39,00</span></span>
+                </div>
+                <div class="card-entrega-right">
+                    <span class="m-entrega-itens">1 item</span>
+                    <span class="status-entrega-text">Concluído</span>
+                </div>
+            </div>
+
+            <!-- Card 8 -->
+            <div class="card-entrega">
+                <div class="card-entrega-left">
+                    <span class="m-entrega-nome">Lucas Martins</span>
+                    <span class="m-entrega-data">24/04/2026  •  14:00</span>
+                    <span class="m-entrega-data">Av. Paulista, 1200 — Centro</span>
+                    <span class="m-entrega-val">Taxa: R$ 5,00  •  <span style="font-weight: 600;">R$ 91,00</span></span>
+                </div>
+                <div class="card-entrega-right">
+                    <span class="m-entrega-itens">3 itens</span>
+                    <span class="status-entrega-text">Pendente</span>
+                </div>
+            </div>
+
+            <!-- Card 9 -->
+            <div class="card-entrega">
+                <div class="card-entrega-left">
+                    <span class="m-entrega-nome">Beatriz Souza Lima</span>
+                    <span class="m-entrega-data">23/04/2026  •  12:20</span>
+                    <span class="m-entrega-data">R. J. Nabuco, 88 — Jd. Bela Vista</span>
+                    <span class="m-entrega-val">Taxa: —  •  <span style="font-weight: 600;">R$ 234,00</span></span>
+                </div>
+                <div class="card-entrega-right">
+                    <span class="m-entrega-itens">6 itens</span>
+                    <span class="status-entrega-text">Concluído</span>
+                </div>
+            </div>
+
+            <!-- Card 10 -->
+            <div class="card-entrega">
+                <div class="card-entrega-left">
+                    <span class="m-entrega-nome">Andréia Ferreira</span>
+                    <span class="m-entrega-data">23/04/2026  •  12:00</span>
+                    <span class="m-entrega-data">R. Castelo Branco, 200 — Residencial</span>
+                    <span class="m-entrega-val">Taxa: —  •  <span style="font-weight: 600;">R$ 222,00</span></span>
+                </div>
+                <div class="card-entrega-right">
+                    <span class="m-entrega-itens">7 itens</span>
+                    <span class="status-entrega-text">Concluído</span>
+                </div>
+            </div>
+
+            <!-- Card 11 -->
+            <div class="card-entrega">
+                <div class="card-entrega-left">
+                    <span class="m-entrega-nome">Pedro Henrique Costa</span>
+                    <span class="m-entrega-data">23/04/2026  •  13:30</span>
+                    <span class="m-entrega-data">R. Tiradentes, 67 — Centro</span>
+                    <span class="m-entrega-val">Taxa: R$ 7,00  •  <span style="font-weight: 600;">R$ 301,00</span></span>
+                </div>
+                <div class="card-entrega-right">
+                    <span class="m-entrega-itens">8 itens</span>
+                    <span class="status-entrega-text">Concluído</span>
+                </div>
+            </div>
+
+            <!-- Card 12 -->
+            <div class="card-entrega">
+                <div class="card-entrega-left">
+                    <span class="m-entrega-nome">Isabela Rodrigues</span>
+                    <span class="m-entrega-data">23/04/2026  •  12:30</span>
+                    <span class="m-entrega-data">Av. Independência, 340 — Jd. Esperança</span>
+                    <span class="m-entrega-val">Taxa: —  •  <span style="font-weight: 600;">R$ 21,00</span></span>
+                </div>
+                <div class="card-entrega-right">
+                    <span class="m-entrega-itens">1 item</span>
+                    <span class="status-entrega-text">Concluído</span>
+                </div>
+            </div>
+            
+        </div>
+            
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="rodape mt-auto">
+        <p>Maxi Massas Itápolis • Sistema de Gestão v1.0</p>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- MODAL: PEDIDO MÍNIMO E TAXA DE ENTREGA     -->
+    <!-- ========================================== -->
+    <div class="modal fade" id="modalTaxa" tabindex="-1" aria-hidden="true">
+        <!-- mx-auto e max-width: 400px para deixar ele menor e centralizado no desktop -->
+        <div class="modal-dialog modal-dialog-centered mx-auto modal-dialog-bottom" style="max-width: 400px;">
+            <div class="modal-content modal-custom-content">
+                
+                <div class="modal-header modal-header-custom d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title-custom mb-0">Pedido Mínimo e Taxa de Entrega</h5>
+                </div>
+                
+                <div class="modal-body p-0 mt-3">
+                    <form id="formTaxa">
+                        <!-- row-gap-custom dá o espaçamento vertical -->
+                        <div class="row row-gap-custom m-0">
+                            
+                            <!-- Pedido Mínimo -->
+                            <div class="col-12 p-0">
+                                <label class="form-label-custom">Pedido Mínimo</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputPedidoMinimo" placeholder="R$ 29,99">
+                            </div>
+                            
+                            <!-- Taxa de Entrega -->
+                            <div class="col-12 p-0 mt-3">
+                                <label class="form-label-custom">Taxa de Entrega</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputTaxaEntrega" placeholder="R$ 4,99">
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="modal-footer modal-footer-custom mt-4 p-0">
+                    <button type="button" class="btn-cancelar-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <!-- form="formTaxa" liga o botão de salvar ao formulário, permitindo validações -->
+                    <button type="submit" form="formTaxa" class="btn-salvar-custom">Salvar</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/header.js"></script>
+    <script src="../js/data-atual.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

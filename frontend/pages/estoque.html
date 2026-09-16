@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoque</title>
+
+    <!-- VINCULANDO AO BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- VINCULANDO AO .CSS -->
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/componentes.css">
+
+    <!-- IMPORTANDO FONTE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gravitas+One&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playwrite+IE:wght@100..400&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/images/login-logo-formulario.png">
+</head>
+<body>
+
+    <!-- CARREGANDO O MENU VIA JAVASCRIPT -->
+    <div id="header-placeholder"></div>
+
+    <main class="conteudo-pagina flex-grow-1">
+        <!-- HEADER PADRÃO -->
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="titulo-pagina mb-0">Estoque</h2>
+            <!-- Data atualizada Tablet/Desktop: Aparece apenas para telas maiores -->
+            <span id="data-atual" class="data-pagina"></span>
+        </header>
+
+        <!-- FILTROS SUPERIORES -->
+        <div class="container-filtros-estoque">
+            <select class="filtro-select" id="filtroTipoEstoque">
+                <option value="">Tipo</option>
+                <option value="Massas">Massas</option>
+                <option value="Molhos">Molhos</option>
+                <option value="Bebidas">Bebidas</option>
+                <option value="Outros">Outros</option>
+            </select>
+
+            <select class="filtro-select" id="filtroStatusEstoque">
+                <option value="">Status Estoque</option>
+                <option value="Ok">Ok</option>
+                <option value="Baixo">Baixo</option>
+                <option value="Crítico">Crítico</option>
+                <option value="Encerrado">Encerrado</option>
+            </select>
+        </div>
+
+        <!-- TOOLBAR: Busca e Botão -->
+        <div class="toolbar-produtos">
+            <div class="search-wrapper">
+                <img src="../assets/icons/icone-pesquisar.svg" class="search-icon" alt="Lupa">
+                <input type="text" class="search-input" id="buscaEstoque" placeholder="Buscar por nome do produto ou sabor...">
+            </div>
+            
+            <button class="btn-novo" data-bs-toggle="modal" data-bs-target="#modalReposicao">
+                Reposição
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO DESKTOP (TABELA) -->
+        <!-- ========================================== -->
+        <div class="table-responsive d-none d-lg-block mb-4 tabela-container">
+            <table class="tabela-produtos tabela-estoque tabela-custom">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th id="th-produto" style="cursor:pointer; user-select: none;">Produto <span>↕</span></th>
+                        <th>Sabor</th>
+                        <th>Peso</th>
+                        <th>Tipo</th>
+                        <th>Quantidade</th>
+                        <th>Status Estoque</th>
+                        <th class="text-center">Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="col-num">1</td>
+                        <td class="col-prod">Canelone</td>
+                        <td>4 Queijos</td>
+                        <td>700g</td>
+                        <td class="tipo-item">Massas</td>
+                        <td class="qtd-item">3</td>
+                        <td class="status-estoque-text status-item"></td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                        </td>
+                    <tr>
+                        <td class="col-num">2</td>
+                        <td class="col-prod">Canelone</td>
+                        <td>Brócolis e Mussarela</td>
+                        <td>700g</td>
+                        <td class="tipo-item">Massas</td>
+                        <td class="qtd-item">5</td>
+                        <td class="status-estoque-text status-item"></td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">3</td>
+                        <td class="col-prod">Canelone</td>
+                        <td>Frango e Requeijão</td>
+                        <td>700g</td>
+                        <td class="tipo-item">Massas</td>
+                        <td class="qtd-item">8</td>
+                        <td class="status-estoque-text status-item"></td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">4</td>
+                        <td class="col-prod">Massa de Lasanha</td>
+                        <td>—</td>
+                        <td>500g</td>
+                        <td class="tipo-item">Massas</td>
+                        <td class="qtd-item">2</td>
+                        <td class="status-estoque-text status-item"></td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">5</td>
+                        <td class="col-prod">Sofieli</td>
+                        <td>4 Queijos</td>
+                        <td>700g</td>
+                        <td class="tipo-item">Massas</td>
+                        <td class="qtd-item">10</td>
+                        <td class="status-estoque-text status-item"></td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">6</td>
+                        <td class="col-prod">Sofioli</td>
+                        <td>Brócolis e Mussarela</td>
+                        <td>700g</td>
+                        <td class="tipo-item">Massas</td>
+                        <td class="qtd-item">7</td>
+                        <td class="status-estoque-text status-item"></td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">7</td>
+                        <td class="col-prod">Sofioli</td>
+                        <td>Frango e Requeijão</td>
+                        <td>700g</td>
+                        <td class="tipo-item">Massas</td>
+                        <td class="qtd-item">4</td>
+                        <td class="status-estoque-text status-item"></td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">8</td>
+                        <td class="col-prod">Sofioli</td>
+                        <td>Presunto e Mussarela</td>
+                        <td>700g</td>
+                        <td class="tipo-item">Massas</td>
+                        <td class="qtd-item">8</td>
+                        <td class="status-estoque-text status-item"></td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">9</td>
+                        <td class="col-prod">Molho</td>
+                        <td>Tomate Tradicional</td>
+                        <td>300g</td>
+                        <td class="tipo-item">Molhos</td>
+                        <td class="qtd-item">0</td>
+                        <td class="status-estoque-text status-item"></td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">10</td>
+                        <td class="col-prod">Molho</td>
+                        <td>Branco</td>
+                        <td>240g</td>
+                        <td class="tipo-item">Molhos</td>
+                        <td class="qtd-item">18</td>
+                        <td class="status-estoque-text status-item"></td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">11</td>
+                        <td class="col-prod">Molho</td>
+                        <td>Especial Sacciali Arrabiata</td>
+                        <td>530g</td>
+                        <td class="tipo-item">Molhos</td>
+                        <td class="qtd-item">9</td>
+                        <td class="status-estoque-text status-item"></td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                    <tr>
+                        <td class="col-num">12</td>
+                        <td class="col-prod">Queijo Ralado</td>
+                        <td>—</td>
+                        <td>40g</td>
+                        <td class="tipo-item">Outros</td>
+                        <td class="qtd-item">36</td>
+                        <td class="status-estoque-text status-item"></td>
+                        <td class="text-center"><button class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO MOBILE (CARDS) -->
+        <!-- ========================================== -->
+        <div class="d-flex flex-column gap-3 d-lg-none mb-4 container-cards-estoque">
+            
+            <!-- 1º Card -->
+            <div class="card-produto card-estoque">
+                <div class="card-prod-left">
+                    <span class="m-prod">Canelone</span>
+                    <span class="m-sabor">4 Queijos</span>
+                    <span class="m-peso-tipo">700g • <span class="tipo-item">Massas</span></span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                    <span class="m-qtd">3 un.</span>
+                    <span class="status-estoque-text status-item"></span>
+                </div>
+            </div>
+
+            <!-- 2º Card -->
+            <div class="card-produto card-estoque">
+                <div class="card-prod-left">
+                    <span class="m-prod">Canelone</span>
+                    <span class="m-sabor">Brócolis e Mussarela</span>
+                    <span class="m-peso-tipo">700g • <span class="tipo-item">Massas</span></span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                    <span class="m-qtd">5 un.</span>
+                    <span class="status-estoque-text status-item"></span>
+                </div>
+            </div>
+
+            <!-- 3º Card -->
+            <div class="card-produto card-estoque">
+                <div class="card-prod-left">
+                    <span class="m-prod">Canelone</span>
+                    <span class="m-sabor">Frango e Requeijão</span>
+                    <span class="m-peso-tipo">700g • <span class="tipo-item">Massas</span></span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                    <span class="m-qtd">8 un.</span>
+                    <span class="status-estoque-text status-item"></span>
+                </div>
+            </div>
+
+            <!-- 4º Card -->
+            <div class="card-produto card-estoque">
+                <div class="card-prod-left">
+                    <span class="m-prod">Massa de Lasanha</span>
+                    <span class="m-sabor">—</span>
+                    <span class="m-peso-tipo">500g • <span class="tipo-item">Massas</span></span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                    <span class="m-qtd">2 un.</span>
+                    <span class="status-estoque-text status-item"></span>
+                </div>
+            </div>
+
+            <!-- 5º Card -->
+            <div class="card-produto card-estoque">
+                <div class="card-prod-left">
+                    <span class="m-prod">Sofieli</span>
+                    <span class="m-sabor">4 Queijos</span>
+                    <span class="m-peso-tipo">700g • <span class="tipo-item">Massas</span></span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                    <span class="m-qtd">10 un.</span>
+                    <span class="status-estoque-text status-item"></span>
+                </div>
+            </div>
+
+            <!-- 6º Card -->
+            <div class="card-produto card-estoque">
+                <div class="card-prod-left">
+                    <span class="m-prod">Sofioli</span>
+                    <span class="m-sabor">Brócolis e Mussarela</span>
+                    <span class="m-peso-tipo">700g • <span class="tipo-item">Massas</span></span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                    <span class="m-qtd">7 un.</span>
+                    <span class="status-estoque-text status-item"></span>
+                </div>
+            </div>
+
+            <!-- 7º Card -->
+            <div class="card-produto card-estoque">
+                <div class="card-prod-left">
+                    <span class="m-prod">Sofioli</span>
+                    <span class="m-sabor">Frango e Requeijão</span>
+                    <span class="m-peso-tipo">700g • <span class="tipo-item">Massas</span></span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                    <span class="m-qtd">4 un.</span>
+                    <span class="status-estoque-text status-item"></span>
+                </div>
+            </div>
+
+            <!-- 8º Card -->
+            <div class="card-produto card-estoque">
+                <div class="card-prod-left">
+                    <span class="m-prod">Sofioli</span>
+                    <span class="m-sabor">Presunto e Mussarela</span>
+                    <span class="m-peso-tipo">700g • <span class="tipo-item">Massas</span></span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                    <span class="m-qtd">8 un.</span>
+                    <span class="status-estoque-text status-item"></span>
+                </div>
+            </div>
+
+            <!-- 9º Card -->
+            <div class="card-produto card-estoque">
+                <div class="card-prod-left">
+                    <span class="m-prod">Molho</span>
+                    <span class="m-sabor">Tomate Tradicional</span>
+                    <span class="m-peso-tipo">300g • <span class="tipo-item">Molhos</span></span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                    <span class="m-qtd">0 un.</span>
+                    <span class="status-estoque-text status-item"></span>
+                </div>
+            </div>
+
+            <!-- 10º Card -->
+            <div class="card-produto card-estoque">
+                <div class="card-prod-left">
+                    <span class="m-prod">Molho</span>
+                    <span class="m-sabor">Branco</span>
+                    <span class="m-peso-tipo">240g • <span class="tipo-item">Molhos</span></span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                    <span class="m-qtd">18 un.</span>
+                    <span class="status-estoque-text status-item"></span>
+                </div>
+            </div>
+
+            <!-- 11º Card -->
+            <div class="card-produto card-estoque">
+                <div class="card-prod-left">
+                    <span class="m-prod">Molho</span>
+                    <span class="m-sabor">Especial Sacciali Arrabiata</span>
+                    <span class="m-peso-tipo">530g • <span class="tipo-item">Molhos</span></span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                    <span class="m-qtd">9 un.</span>
+                    <span class="status-estoque-text status-item"></span>
+                </div>
+            </div>
+
+            <!-- 12º Card -->
+            <div class="card-produto card-estoque">
+                <div class="card-prod-left">
+                    <span class="m-prod">Queijo Ralado</span>
+                    <span class="m-sabor">—</span>
+                    <span class="m-peso-tipo">40g • <span class="tipo-item">Outros</span></span>
+                </div>
+                <div class="card-prod-right">
+                    <button class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste"><img src="../assets/icons/icone-edicao.svg" alt="Editar"></button>
+                    <span class="m-qtd">36 un.</span>
+                    <span class="status-estoque-text status-item"></span>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="rodape mt-auto">
+        <p>Maxi Massas Itápolis • Sistema de Gestão v1.0</p>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- MODAL 1: REPOSIÇÃO EM MASSA (Bottom Sheet no Mobile) -->
+    <!-- ========================================== -->
+    <div class="modal fade" id="modalReposicao" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-produto-custom modal-totalmente-arredondado">
+            <div class="modal-content modal-custom-content">
+                
+                <div class="modal-header modal-header-custom d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title-custom mb-0">Reposição</h5>
+                </div>
+                
+                <div class="modal-body p-0">
+                    <div class="row m-0">
+                        <div class="col-12 p-0 mt-2">
+                            
+                            <!-- CARD CANELONE -->
+                            <div class="card-reposicao">
+                                <div class="card-reposicao-header">Canelone</div>
+                                <div class="card-reposicao-body">
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text">4 Queijos • 700g</span>
+                                        <div class="contador-wrapper">
+                                            <button class="btn-contador btn-menos">-</button>
+                                            <span class="qtd-contador">0</span>
+                                            <button class="btn-contador btn-mais">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text">Brócolis e Mussarela • 700g</span>
+                                        <div class="contador-wrapper">
+                                            <button class="btn-contador btn-menos">-</button>
+                                            <span class="qtd-contador">0</span>
+                                            <button class="btn-contador btn-mais">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text">Frango e Requeijão • 700g</span>
+                                        <div class="contador-wrapper">
+                                            <button class="btn-contador btn-menos">-</button>
+                                            <span class="qtd-contador">0</span>
+                                            <button class="btn-contador btn-mais">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD SOFIELI / SOFIOLI -->
+                            <div class="card-reposicao">
+                                <div class="card-reposicao-header">Sofioli</div>
+                                <div class="card-reposicao-body">
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text">4 Queijos • 700g</span>
+                                        <div class="contador-wrapper">
+                                            <button class="btn-contador btn-menos">-</button>
+                                            <span class="qtd-contador">0</span>
+                                            <button class="btn-contador btn-mais">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text">Brócolis e Mussarela • 700g</span>
+                                        <div class="contador-wrapper">
+                                            <button class="btn-contador btn-menos">-</button>
+                                            <span class="qtd-contador">0</span>
+                                            <button class="btn-contador btn-mais">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text">Frango e Requeijão • 700g</span>
+                                        <div class="contador-wrapper">
+                                            <button class="btn-contador btn-menos">-</button>
+                                            <span class="qtd-contador">0</span>
+                                            <button class="btn-contador btn-mais">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text">Presunto e Mussarela • 700g</span>
+                                        <div class="contador-wrapper">
+                                            <button class="btn-contador btn-menos">-</button>
+                                            <span class="qtd-contador">0</span>
+                                            <button class="btn-contador btn-mais">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD MASSA DE LASANHA -->
+                            <div class="card-reposicao">
+                                <div class="card-reposicao-header">Massa de Lasanha</div>
+                                <div class="card-reposicao-body">
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text">Tradicional • 500g</span>
+                                        <div class="contador-wrapper">
+                                            <button class="btn-contador btn-menos">-</button>
+                                            <span class="qtd-contador">0</span>
+                                            <button class="btn-contador btn-mais">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD MOLHOS -->
+                            <div class="card-reposicao">
+                                <div class="card-reposicao-header">Molhos</div>
+                                <div class="card-reposicao-body">
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text">Tomate Tradicional • 300g</span>
+                                        <div class="contador-wrapper">
+                                            <button class="btn-contador btn-menos">-</button>
+                                            <span class="qtd-contador">0</span>
+                                            <button class="btn-contador btn-mais">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text">Branco • 240g</span>
+                                        <div class="contador-wrapper">
+                                            <button class="btn-contador btn-menos">-</button>
+                                            <span class="qtd-contador">0</span>
+                                            <button class="btn-contador btn-mais">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text">Especial Sacciali Arrabiata • 530g</span>
+                                        <div class="contador-wrapper">
+                                            <button class="btn-contador btn-menos">-</button>
+                                            <span class="qtd-contador">0</span>
+                                            <button class="btn-contador btn-mais">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD QUEIJO RALADO -->
+                            <div class="card-reposicao">
+                                <div class="card-reposicao-header">Queijo Ralado</div>
+                                <div class="card-reposicao-body">
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text">Tradicional • 40g</span>
+                                        <div class="contador-wrapper">
+                                            <button class="btn-contador btn-menos">-</button>
+                                            <span class="qtd-contador">0</span>
+                                            <button class="btn-contador btn-mais">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD BEBIDAS -->
+                            <div class="card-reposicao">
+                                <div class="card-reposicao-header">Bebidas</div>
+                                <div class="card-reposicao-body">
+                                    <div class="linha-produto-reposicao">
+                                        <span class="sabor-peso-text" style="color: #9CA3AC; font-style: italic;">Nenhum produto cadastrado</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer modal-footer-custom">
+                    <button type="button" class="btn-cancelar-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn-salvar-custom">Salvar</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL 2: AJUSTE DE ESTOQUE (Centralizado Desktop e Mobile) -->
+    <!-- ========================================== -->
+    <div class="modal fade" id="modalAjuste" tabindex="-1" aria-hidden="true">
+        <!-- mx-auto para manter sempre no centro -->
+        <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 350px;">
+            <div class="modal-content modal-ajuste-content shadow">
+                
+                <div class="modal-header modal-header-custom d-flex justify-content-between align-items-center border-0 mb-0 pb-2">
+                    <h5 class="modal-title-custom mb-0">Ajustar Estoque</h5>
+                </div>
+                
+                <div class="modal-body p-0 mt-3">
+                    
+                    <!-- Info de Leitura -->
+                    <div class="info-produto-ajuste">
+                        <p id="ajusteNome"><strong>Produto</strong></p>
+                        <p id="ajusteSabor">Sabor</p>
+                        <p id="ajustePeso">Peso</p>
+                    </div>
+
+                    <!-- Input de Ajuste -->
+                    <div>
+                        <label class="form-label-custom">Novo Estoque Exato *</label>
+                        <input type="number" class="form-control form-control-custom w-100" id="inputAjusteQtd" placeholder="Ex: 10">
+                    </div>
+
+                </div>
+                
+                <div class="modal-footer modal-footer-custom mt-4 p-0">
+                    <button type="button" class="btn-cancelar-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn-salvar-custom">Salvar</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+
+    <script src="../js/header.js"></script>
+    <script src="../js/data-atual.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>

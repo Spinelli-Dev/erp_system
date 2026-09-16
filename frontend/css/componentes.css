@@ -1,0 +1,2309 @@
+/* 
+============================================================================================================================== 
+        HEADER
+============================================================================================================================== 
+*/
+/* #region */
+/* Efeito Hover nos links do Menu Desktop */
+.navbar-nav .nav-link {
+    /* Adiciona uma transição suave para o fundo não aparecer de forma brusca */
+    transition: background-color 0.3s ease, border-radius 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    color: #ffffff !important; /* Garante que o texto continue branco */
+}
+/* #endregion */
+
+
+
+/* 
+============================================================================================================================== 
+        PERSONALIZAÇÃO DOS LINKS NO NAVBAR
+============================================================================================================================== 
+*/
+/* #region - NAVBAR */
+/* ESTILO DA NAVBAR E SIDEBAR (BOOTSTRAP) */
+.nav-link-custom {
+    display: block;
+    padding: 12px 12px 12px 45px;
+    text-decoration: none;
+    color: #1a1a1a;
+    font-weight: 900;
+    position: relative;
+}
+
+/* Quadrado cinza ao lado dos links no menu lateral */
+.nav-link-custom::before {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 12px;
+    width: 12px;
+    background-color: gray;
+    border-radius: 2px;
+}
+
+.nav-link-custom:hover::before {
+    background-color: #9A1006;
+}
+
+/* Subtítulos (Padrão para PERÍODO e HISTÓRICO) */
+.subtitulo-secao {
+    color: #4B5563;
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 700;
+    letter-spacing: 0.91px;
+    margin-top: 32px; /* Espaço maior entre seções */
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+/* Estilização dos Seletores */
+.seletor-periodo {
+    display: flex;
+    padding: 7px 14px;
+    align-items: center;
+    border-radius: 6px;
+    border: 1.5px solid #E5E7EB;
+    background: #FFF;
+    color: #111827;
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 400;
+    outline: none;
+    cursor: pointer;
+    width: auto;
+    min-width: 120px;
+}
+
+/* Larguras específicas para não sobrar espaço vazio */
+#filtro-mes {
+    width: 110px; 
+}
+
+#filtro-ano {
+    width: 80px;
+}
+
+.seletor-periodo:focus {
+    border-color: #9A1006; /* Destaque com a cor da Maxi Massas ao clicar */
+}
+
+/* #endregion - ROLAGEM HORIZONTAL */
+
+/* #region  */
+/* --- ESTILOS DOS CARDS FINAIS --- */
+
+/* Cabeçalhos internos dos Cards */
+.titulo-card-interno {
+    color: #111827;
+    font-size: 0.84375rem; /* 13.5px */
+    font-weight: 700;
+}
+
+.link-card {
+    color: #9A1006;
+    font-size: 0.75rem; /* 12px */
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.link-card:hover { 
+    text-decoration: underline; 
+}
+
+/* Lista Padrão (Estoque e Entregas) */
+.item-lista {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.item-lista:last-child { 
+    border-bottom: none; 
+    padding-bottom: 0; 
+}
+
+/* Textos Estoque */
+.estoque-nome { 
+    color: #111827; 
+    font-size: 0.8125rem; 
+    font-weight: 600; 
+}
+
+.badge-estoque { 
+    display: flex; 
+    padding: 3px 8px; 
+    border-radius: 6px; 
+    font-size: 0.75rem; 
+    font-weight: 700; 
+}
+
+.badge-critico { 
+    background: #FEE2E2; 
+    color: #DC2626; 
+} /* <= 3 */
+
+.badge-alerta { 
+    background: #FEF3C4; 
+    color: #D99907; 
+} /* <= 6 */
+
+/* Textos Entregas */
+.entrega-nome { 
+    color: #111827; 
+    font-size: 0.84375rem; 
+    font-weight: 700; 
+    display: block; 
+}
+
+.entrega-end { 
+    color: #9CA3AC; 
+    font-size: 0.8125rem; 
+    font-weight: 400; 
+    margin-top: 2px; 
+}
+
+.badge-hora { 
+    display: flex; 
+    padding: 4px 8px; 
+    border-radius: 6px; 
+    background: rgba(154, 16, 6, 0.08); 
+    color: #9A1006; 
+    font-size: 0.75rem; 
+    font-weight: 700; 
+}
+
+/* Top 3 Clientes (Uso de CSS Grid para posicionamento exato) */
+.cliente-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    column-gap: 12px;
+    align-items: center;
+    padding: 24px 20px; 
+    border-bottom: 1px solid #f3f4f6; /* Bordas para desktop */
+}
+
+.cliente-item:last-child { 
+    border-bottom: none; 
+}
+
+.cliente-pos {
+    grid-column: 1; 
+    grid-row: 1 / span 2;
+    display: flex; 
+    width: 22px; 
+    height: 22px; 
+    justify-content: center; 
+    align-items: center;
+    border-radius: 50%; 
+    background: rgba(154, 16, 6, 0.10); 
+    color: #9A1006; 
+    font-size: 0.8125rem; 
+    font-weight: 700;
+}
+
+.cliente-nome {
+    grid-column: 2; 
+    grid-row: 1; 
+    color: #111827; 
+    font-size: 0.84375rem; 
+    font-weight: 700; 
+}
+
+.cliente-val { 
+    grid-column: 2; 
+    grid-row: 2; 
+    color: #9A1006; 
+    font-size: 0.8125rem; 
+    font-weight: 700; 
+    margin-top: 2px; 
+}
+
+.cliente-qtd { 
+    grid-column: 3; 
+    grid-row: 2; 
+    color: #111827; 
+    font-size: 0.75rem; 
+    align-self: end; 
+}
+
+/* Top 5 Produtos (Tabela CSS Grid) */
+.grid-produto-head {
+    display: grid; 
+    grid-template-columns: 20px 1fr 80px 40px; 
+    gap: 10px;
+    color: #4B5563; 
+    font-size: 0.6875rem; 
+    font-weight: 700; 
+    letter-spacing: 0.55px;
+    padding-bottom: 8px; 
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.grid-produto-row {
+    display: grid; 
+    grid-template-columns: 20px 1fr 80px 40px; 
+    gap: 10px; 
+    align-items: center;
+    padding: 10px 0; 
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.grid-produto-row:last-child { 
+    border-bottom: none; 
+}
+
+.prod-pos { 
+    color: #6B7380; 
+    font-size: 0.75rem; 
+    font-weight: 700; 
+}
+
+.prod-nome { 
+    color: #111827; 
+    font-size: 0.8125rem; 
+    font-weight: 600;
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}
+
+.prod-fat { 
+    color: #9A1006; 
+    font-size: 0.8125rem; 
+    font-weight: 700; 
+    text-align: right;
+}
+
+.prod-qtd { 
+    color: #111827; 
+    font-size: 0.75rem; 
+    text-align: right;
+}
+
+/* #endregion */
+
+
+/* 
+============================================================================================================================== 
+        PERSONALIZAÇÃO DAS TABELAS
+============================================================================================================================== 
+*/
+/* #region */
+/* 1. Container envelopador para dar a borda externa com cantos arredondados */
+.tabela-container {
+    border: 1px solid #E0E1E5;
+    border-radius: 8px;
+    overflow: hidden; /* Esse é o truque: corta as pontas da tabela para respeitar o arredondamento */
+    background-color: #FFF;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Uma sombrinha quase invisível para dar profundidade */
+    overflow-x: auto;
+}
+
+/* 2. Reset para a tabela não estourar o container */
+.tabela-custom {
+    width: 100%;
+    margin-bottom: 0; /* Remove margem padrão do Bootstrap */
+    border-collapse: collapse;
+}
+
+/* 3. Estilo do Cabeçalho (thead) */
+.tabela-custom thead th {
+    background-color: #F9FAFB; /* O fundo cinza sutil para destacar */
+    text-transform: uppercase; /* Deixa as letras maiúsculas para dar cara de sistema */
+    letter-spacing: 0.05em;
+    padding: 16px;
+    border-bottom: 2px solid #E0E1E5; /* Borda um pouco mais grossa para separar bem do conteúdo */
+}
+
+/* 4. Estilo do Corpo da Tabela (tbody) */
+.tabela-custom tbody td {
+    vertical-align: middle;
+    border-bottom: 1px solid #E0E1E5; /* Linha divisória entre os itens */
+}
+
+/* 5. Remove a linha do último item para não encavalar com a borda do container */
+.tabela-custom tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Opcional: Efeito hover suave ao passar o mouse na linha */
+.tabela-custom tbody tr:hover {
+    background-color: #F3F4F6;
+}
+/* #endregion */
+
+/* 
+============================================================================================================================== 
+        HEADER DO MAIN
+============================================================================================================================== 
+*/
+/* #region - HEADER DO MAIN */
+/* Título da Página (H2) */
+.titulo-pagina {
+    color: #111827;
+    font-size: 1.375rem; /* 22px */
+    font-weight: 800;
+}
+
+/* Data da Página */
+.data-pagina {
+    color: #4B5563;
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 400;
+}
+
+/* Subtítulo "Hoje" */
+.subtitulo-hoje {
+    color: #4B5563;
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 700;
+    letter-spacing: 0.91px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+}
+/* #endregion */
+
+
+/* 
+============================================================================================================================== 
+        TELA: LOGIN
+============================================================================================================================== 
+*/
+/* #region */
+/* --- BANNER MOBILE --- */
+.banner-login {
+    background-image: url('../assets/images/banner-sem-logo-mobile.png'); 
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 340px; 
+    flex: 0 0 340px; 
+}
+
+.texto-sobreposto {
+    position: relative;
+    z-index: 2; 
+}
+
+.logo-banner {
+    width: 96px !important;
+    height: auto !important; 
+}
+
+.titulo-banner {
+    color: #FFF;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.625rem; /* 26px */
+    font-style: normal;
+    font-weight: 800;
+    line-height: normal;
+}
+
+.subtitulo-banner {
+    color: rgba(255, 255, 255, 0.72);
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8125rem; /* 13px */
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.texto-sistema {
+    color: rgba(255, 255, 255, 0.50);
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem; /* 14px */
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.divisor-banner {
+    width: 60px;
+    height: 2px;
+    border-radius: 1px;
+    background: rgba(255, 255, 255, 0.30);
+}
+
+.texto-boas-vindas {
+    color: rgba(255, 255, 255, 0.60);
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9375rem; /* 15px */
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+/* --- FORMULÁRIO (FUNDO, CAIXA E EFEITO SOBREPOSIÇÃO) --- */
+.bg-fundo-form {
+    background-color: #FFF; 
+    margin-top: -40px; /* Efeito de sobrepor o banner no mobile */
+    border-radius: 28px 28px 0 0;
+    position: relative;
+    z-index: 10;
+}
+
+.cartao-login {
+    width: 100%;
+    background: transparent; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+}
+
+.bloco-form { 
+    width: 334px; 
+}
+
+/* --- FORMULÁRIO (TEXTOS E LOGO) --- */
+.logo-form {
+    width: 65px;
+    height: 40px;
+    aspect-ratio: 13 / 8;
+    object-fit: contain;
+}
+
+.titulo-login {
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.5rem; /* 24px */
+    font-weight: 800;
+    line-height: normal;
+    margin-bottom: 4px;
+}
+
+.subtitulo-login {
+    color: #9CA3AC;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 32px;
+}
+
+.label-login {
+    color: #4B5563;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem; /* 12px */
+    font-weight: 600;
+    line-height: normal;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* --- FORMULÁRIO (INPUTS) --- */
+.input-login {
+    height: 50px;
+    padding: 15px 48px 15px 16px;
+    border-radius: 10px;
+    border: 1.5px solid #E0E1E5;
+    background: #F3F4F6;
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem; /* 14px */
+}
+
+.input-login:focus {
+    outline: none;
+    border-color: #9A1006;
+    background: #FFF;
+}
+
+/* --- FORMULÁRIO (BOTÕES E LINKS) --- */
+.link-senha {
+    color: #9A1006;
+    text-align: right;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 500;
+    line-height: normal;
+    text-decoration: none;
+    display: block;
+}
+
+.link-senha:hover { 
+    text-decoration: underline; 
+}
+
+.btn-login {
+    display: flex;
+    height: 52px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    background: #9A1006;
+    box-shadow: 0 4px 16px 0 rgba(154, 16, 6, 0.40);
+    color: #FFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem; /* 16px */
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.rodape-login {
+    color: #9CA3AC;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6875rem; /* 11px */
+    font-weight: 400;
+    line-height: normal;
+    margin-top: 32px;
+}
+
+.btn-mostrar-senha {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+/* #endregion */
+
+
+/* 
+============================================================================================================================== 
+        TELA: DASHBOARD
+============================================================================================================================== 
+*/
+
+/* #region - CARDS PRINCIPAIS  */
+
+/* Card Principal Dashboard */
+.card-maxi {
+    border-radius: 10px;
+    border: 1px solid #EDEDED;
+    background: #FFF;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.25);
+    padding: 1rem;
+    height: 100%;
+}
+
+/* Título e Ícone do Card */
+.card-maxi .card-title {
+    color: #4B5563;
+    font-size: 0.6875rem; /* 11px */
+    font-weight: 600;
+    letter-spacing: 0.44px;
+}
+
+.card-maxi .card-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* Informação Principal */
+.card-maxi .card-value {
+    color: #111827;
+    font-size: 1.625rem; /* 26px */
+    font-weight: 800;
+    line-height: 30px;
+    margin: 8px 0;
+}
+
+/* Comparação */
+.card-maxi .comparison-text {
+    font-size: 0.75rem; /* 12px */
+    color: #9CA3AC;
+}
+
+.status-positivo { 
+    color: #16A34A !important; 
+} 
+
+.status-negativo { 
+    color: #A31616 !important; 
+} 
+
+/* #endregion */
+
+/* #region - CARDS SECUNDÁRIOS */
+/* Container de Rolagem Horizontal */
+.scroll-horizontal {
+    display: flex;
+    flex-wrap: nowrap; /* Impede que os cards pulem para a linha de baixo */
+    overflow-x: auto;  /* Habilita o scroll lateral */
+    padding-bottom: 15px; /* Espaço para a barra de rolagem não colar nos cards */
+    gap: 12px;
+    scrollbar-width: none; /* Esconde a barra no Firefox */
+    -webkit-overflow-scrolling: touch; /* Deixa a rolagem suave no iPhone */
+}
+
+.scroll-horizontal::-webkit-scrollbar {
+    display: none; /* Esconde a barra no Chrome/Safari */
+}
+
+/* Estilo do Card Secundário (Histórico) */
+.card-historico {
+    flex: 0 0 calc(33.333% - 12px); /* No mobile/tablet mostra 3 cards (33%) */
+    min-width: 100px; /* Garante que não fiquem pequenos demais */
+    border-radius: 10px;
+    border: 1px solid #EDEDED;
+    background: #FFF;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.25);
+    padding: 10px;
+}
+
+/* Fontes específicas para estes cards */
+.card-historico .title { 
+    font-size: 0.625rem; 
+    font-weight: 600; 
+    color: #4B5563; 
+    text-transform: uppercase; 
+}
+
+.card-historico .value { 
+    font-size: 1.25rem; 
+    font-weight: 800; 
+    color: #111827; 
+    margin: 4px 0; 
+}
+
+.card-historico .comp { 
+    font-size: 0.75rem; 
+    color: #9CA3AC; 
+}
+
+/* Subtítulo Deslize */
+.hint-deslize {
+    color: #9CA3AC;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 400;
+    text-align: left;
+    margin-bottom: 8px;
+    margin-top: 0;
+}
+
+/* #endregion */
+
+
+/* 
+============================================================================================================================== 
+        TELA: VENDAS
+============================================================================================================================== 
+*/
+/* #region */
+/* Contadores Totais */
+.contador-vendas-desktop {
+    display: flex;
+    height: 40px; /* Mesma altura dos selects */
+    padding: 8px 16px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    background: #9CA3AC;
+    color: #FFF;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.contador-vendas-mobile {
+    display: flex;
+    padding: 4px 8px;
+    align-items: center;
+    border-radius: 6px;
+    background: #9CA3AC;
+    color: #FFF;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Tabela Desktop */
+.col-venda {
+    color: #9CA3AC;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.col-nome {
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.respiro-esq {
+    padding-left: 20px !important; 
+}
+
+/* Cores de Status da Venda */
+.status-venda-concluido { color: #16A34A !important; font-weight: 600; }
+.status-venda-agendado { color: #0773D9 !important; font-weight: 600; }
+.status-venda-pendente { color: #D99907 !important; font-weight: 600; }
+.status-venda-cancelado { color: #9A1006 !important; font-weight: 600; }
+
+/* Layout do Card Mobile de Vendas */
+.card-venda {
+    display: flex;
+    flex-direction: column;
+    background: #FFF;
+    border: 1px solid #EDEEF0;
+    border-radius: 8px;
+    padding: 4px 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    gap: 2px !important;
+}
+
+.card-venda-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.m-venda-nome {
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.m-venda-tel {
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.m-venda-valor {
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.m-venda-itens {
+    color: #6B7380; /* Usando o cinza sutil padrão do sistema para a quantidade */
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.status-venda-text { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; }
+
+/* Botão Secundário (Transparente com borda cinza) */
+.btn-secundario {
+    display: flex;
+    height: 40px; /* Mesma altura do btn-novo */
+    padding: 0 16px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    border: 1.5px solid #9A1006;
+    background: #FFF;
+    color: #9A1006;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem; /* 14px */
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap; /* Não quebra linha */
+}
+
+/* ========================================== */
+/* AUTOCOMPLETE (MODAL CONSUMO E VENDAS)      */
+/* ========================================== */
+.autocomplete-lista {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #FFF;
+    border: 1px solid #EDEEF0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-height: 200px; /* Cria scroll se passar de 4 itens */
+    overflow-y: auto;
+    z-index: 1000; /* Força a ficar acima de tudo */
+    margin: 4px 0 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.autocomplete-item {
+    padding: 10px 12px;
+    border-bottom: 1px solid #F3F4F6;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.autocomplete-item:last-child { border-bottom: none; }
+.autocomplete-item:hover { background-color: #F9FAFB; }
+
+/* Tipografia em 2 linhas pedida */
+.auto-nome {
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 600;
+}
+
+.auto-detalhes {
+    color: #6B7380;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6875rem; /* 11px */
+    font-weight: 400;
+}
+
+
+
+/* #endregion */
+
+
+
+/* 
+============================================================================================================================== 
+        TELA: NOVA VENDA (PDV)
+============================================================================================================================== 
+*/
+/* #region - NOVA VENDA */
+/* Estilos de Card e Tipografia Padrão */
+.pdv-card {
+    background: #FFF;
+    border: 1px solid #EDEEF0;
+    border-radius: 8px;
+    padding: 12px 14px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.pdv-titulo {
+    display: block;
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.pdv-subtitulo {
+    display: block;
+    color: #9CA3AC;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.pdv-data-hora {
+    color: #9CA3AC;
+    text-align: right;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+/* Caixa de Cliente Selecionado */
+.cliente-selecionado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+}
+
+.cliente-nome-pdv { font-size: 14px; font-weight: 600; color: #111827; }
+.cliente-tel-pdv { font-size: 12px; color: #6B7380; }
+.btn-remover-cliente { background: none; border: none; color: #DC2626; font-size: 12px; font-weight: 600; }
+
+/* Labels e Inputs Internos */
+.pdv-label {
+    color: #4B5563;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: block;
+}
+
+/* Botões Selecionáveis (Toggle) */
+.btn-toggle-pdv {
+    display: flex;
+    padding: 6px 12px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid #EDEDED;
+    background: #FFF;
+    color: #4B5563;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Estado Ativo do Botão */
+.btn-toggle-pdv.active {
+    border: 1.5px solid #9A1006;
+    background: rgba(154, 16, 6, 0.05); /* Fundo levíssimo vermelho para destacar */
+    color: #9A1006;
+    font-weight: 600;
+}
+
+/* Grid de Status (2 por linha) */
+.btn-grid-2 .btn-toggle-pdv {
+    flex: 0 0 calc(50% - 4px); /* Pega 50% menos metade do gap (8px/2) */
+}
+
+/* Campos de Endereço Aninhados */
+.linha-endereco {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #E5E7EB;
+    padding: 4px 0;
+}
+
+.pdv-label-end {
+    color: #4B5563;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 65px;
+}
+
+.pdv-input-end {
+    border: none;
+    background: transparent;
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    outline: none;
+}
+
+/* Bloco Sugerido */
+.sugestao-box {
+    display: flex;
+    height: 52px;
+    padding: 8px 14px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+}
+
+.sugestao-info { display: flex; flex-direction: column; }
+.sugestao-nome { color: #111827; font-size: 13px; font-weight: 600; }
+.sugestao-detalhe { color: #9CA3AC; font-size: 11px; }
+
+/* Switch de Desconto */
+.switch-desconto {
+    display: flex;
+    padding: 3px;
+    align-items: center;
+    gap: 2px;
+    border-radius: 8px;
+    background: #F3F4F6;
+}
+
+.switch-desconto .btn-sw {
+    display: flex;
+    padding: 7px 16px;
+    align-items: center;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #9CA3AC;
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.switch-desconto .btn-sw.active {
+    background: #FFF;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.10);
+    color: #111827;
+    font-weight: 600;
+}
+
+/* COMANDA (Coluna da Direita) */
+.btn-imprimir {
+    display: flex;
+    padding: 8px 15px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 6px;
+    border-radius: 8px;
+    background: #F3F4F6;
+    border: none;
+    color: #4B5563;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.comanda-info {
+    color: #9CA3AC;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+}
+
+.linha-divisoria {
+    border-top: 1px dashed #E5E7EB; /* Tracejado para dar cara de cupom */
+    margin: 12px 0;
+    opacity: 1;
+}
+
+.comanda-dados .lbl { color: #111827; font-size: 13px; font-weight: 600; min-width: 85px; }
+.comanda-dados .val { color: #4B5563; font-size: 13px; }
+
+.comanda-item-head { color: #111827; font-size: 13px; font-weight: 600; }
+.comanda-item-row { display: flex; justify-content: space-between; color: #4B5563; font-size: 10px; margin-bottom: 4px; }
+
+.comanda-lbl-total { color: #4B5563; font-size: 13px; }
+.comanda-val-total { color: #111827; font-size: 13px; font-weight: 600; }
+
+.comanda-lbl-final { color: #111827; font-size: 14px; font-weight: 600; }
+.comanda-val-final { color: #9A1006; font-size: 20px; font-weight: 800; }
+
+/* Ajuste Fino para os Cards de Agrupamento do PDV */
+#containerProdutosPDV .card-reposicao {
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    background: #FFF;
+    overflow: hidden; 
+}
+
+#containerProdutosPDV .card-reposicao-header {
+    background: #F9FAFB;
+    padding: 6px 12px; /* Topo mais fino */
+    font-size: 13px;
+    font-weight: 600;
+    color: #111827;
+}
+
+#containerProdutosPDV .linha-produto-reposicao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 6px; /* Borda arredondada interna caso tenha hover */
+}
+
+/* Hover suave em cada linha (Opcional, mas ótimo para UX) */
+#containerProdutosPDV .linha-produto-reposicao:hover {
+    background-color: #F9FAFB; 
+}
+
+/* #endregion */
+
+
+
+/* 
+============================================================================================================================== 
+        TELA: CLIENTES
+============================================================================================================================== 
+*/
+
+/* #region - CONTADORES DE CLIENTES */
+.contador-clientes-desktop {
+    display: flex;
+    height: 40px;
+    padding: 0 16px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    background: #9CA3AC;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.25);
+    color: #FFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    width: auto;
+}
+
+.contador-clientes-mobile {
+    display: flex;
+    padding: 4px 8px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    background: #9CA3AC;
+    color: #FFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+/* #endregion */
+
+/* #region - TABELA DESKTOP */
+/* Blindagem da Tabela de Clientes */
+.tabela-clientes {
+    min-width: 100% !important;
+    white-space: nowrap !important; /* Cria o scroll lateral na div pai */
+    margin: 0 !important;
+}
+
+/* O SEGREDO DO ALINHAMENTO: 
+   Tira o recuo esquerdo da primeira coluna para o texto alinhar perfeitamente 
+   na mesma linha imaginária do Título e da Lupa de busca */
+.tabela-clientes th:first-child,
+.tabela-clientes td:first-child {
+    padding-left: 0 !important;
+    width: 50px; 
+}
+
+/* Como forçamos a não quebrar linha, damos um respiro na direita 
+   para as informações não ficarem grudadas umas nas outras no scroll */
+.tabela-clientes th,
+.tabela-clientes td {
+    padding-right: 24px !important; 
+}
+
+/* Ajuste dos ícones de ordenar (↕) para não ficarem colados no texto */
+.coluna-ordenavel span {
+    font-size: 12px;
+    color: #9CA3AC;
+    margin-left: 6px;
+}
+
+.coluna-ordenavel {
+    cursor: pointer;
+    user-select: none;
+}
+/* #endregion */
+
+/* #region - CARDS MOBILE */
+/* Tipografia Mobile (Card Cliente) */
+.m-gasto-destaque {
+    color: #9A1006;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.m-info-secundaria {
+    color: #6B7380;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+/* Área Expandida do Card (Lista de Informações) */
+.area-expandida-cliente {
+    border-top: 1px solid #E5E7EB;
+    margin-top: 12px;
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.info-stacked {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.info-stacked .lbl {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #4B5563;
+}
+
+.info-stacked .val {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: #6B7380;
+}
+/* #endregion */
+
+/* #region - MODAL */
+/* Aviso CEP no Modal de Clientes */
+.aviso-cep {
+    color: #16A34A;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.5625rem !important;
+    font-weight: 400;
+    line-height: normal;
+    display: block;
+    margin-top: 4px;
+}
+/* #endregion */
+
+
+
+/* 
+============================================================================================================================== 
+        TELA: ESTOQUE
+============================================================================================================================== 
+*/
+/* #region - TABELA: DESKTOP */
+/* Filtros Superiores */
+.container-filtros-estoque {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.filtro-select {
+    display: flex;
+    padding: 7px 14px;
+    align-items: center;
+    gap: 8px;
+    border-radius: 6px;
+    border: 1.5px solid #E5E7EB;
+    background: #FFF;
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 400;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Tipografia Base dos Status */
+.status-estoque-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 600;
+}
+
+/* Cores dos Status */
+.status-critico { 
+    color: #9A1006 !important; 
+}
+
+.status-baixo { 
+    color: #D99907 !important; 
+}
+
+.status-ok { 
+    color: #16A34A !important; 
+}
+
+.status-encerrado { 
+    color: #111827 !important; 
+}
+
+/* #endregion */
+
+/* #region - MODAL DE REPOSIÇÃ O */
+/* Estrutura do Card Interno */
+.card-reposicao {
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    background: #FFF;
+    margin-bottom: 12px;
+}
+
+.card-reposicao-header {
+    padding: 10px 14px;
+    border-bottom: 1px solid #E5E7EB;
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem; /* 14px */
+    font-weight: 600;
+}
+
+.card-reposicao-body {
+    padding: 8px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Reduzi o espaço para manter a sensação de grupo */
+}
+
+/* Linha do Produto */
+.linha-produto-reposicao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sabor-peso-text {
+    color: #4B5563;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+/* Contador (+ e -) */
+.contador-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    padding: 2px 8px; 
+}
+
+.btn-contador {
+    background: none;
+    border: none;
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.qtd-contador {
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 18px;
+    text-align: center;
+}
+/* #endregion */
+
+/* #region - MODAL DE AJUSTE INDIVIDUAL (CENTRALIZADO MOBILE)*/
+/* Força o arredondamento em todas as bordas e bloqueia o bottom-sheet */
+.modal-ajuste-content {
+    border-radius: 12px !important;
+    background: #FFF;
+    border: none;
+    padding: 24px 20px;
+}
+
+/* Caixa de informação de leitura */
+.info-produto-ajuste {
+    background: #F3F4F6;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #E5E7EB;
+}
+
+.info-produto-ajuste p { 
+    margin: 0 0 4px 0; 
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8125rem; /* 13px */
+    color: #4B5563; 
+}
+
+.info-produto-ajuste strong { 
+    color: #111827; 
+}
+/* #endregion */
+
+
+
+/* 
+============================================================================================================================== 
+        TELA: PRODUTOS
+============================================================================================================================== 
+*/
+/* #region - TABELA */
+/* --- TELA DE PRODUTOS --- */
+
+/* Barra de Pesquisa e Botão */
+.toolbar-produtos {
+    display: flex;
+    flex-direction: column; /* Mobile: um por linha */
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    width: 20px;
+    height: 20px;
+}
+
+.search-input {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px 0 40px; /* 40px na esquerda para não escrever em cima da lupa */
+    border-radius: 8px;
+    border: 1px solid #EDEEF0;
+    background: #FFF;
+    outline: none;
+    font-size: 0.8125rem; /* 13px */
+}
+
+.search-input::placeholder {
+    color: #9BA3AC;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+}
+
+.btn-novo {
+    display: flex;
+    height: 40px;
+    padding: 0 16px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    background: #9A1006;
+    color: #FFF;
+    font-size: 0.875rem; /* 14px */
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.25);
+    white-space: nowrap;
+}
+
+/* Tabela de Produtos (Desktop) */
+.tabela-produtos {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabela-produtos thead th {
+    height: 36px;
+    padding: 0 4px 0 8px;
+    color: #4B5563;
+    font-size: 0.6875rem; /* 11px */
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-bottom: 2px solid #E5E7EB;
+    text-align: left;
+}
+
+/* Efeito Zebra e Hover */
+.tabela-produtos tbody tr:nth-child(odd) { 
+    background-color: #F9FAFB; 
+}
+
+.tabela-produtos tbody tr:nth-child(even) { 
+    background-color: #FFFFFF; 
+}
+
+.tabela-produtos tbody tr:hover { 
+    background-color: #F3F4F6; 
+}
+
+.tabela-produtos td {
+    padding: 12px 8px;
+    color: #111827;
+    font-size: 0.8125rem; /* 13px */
+    vertical-align: middle;
+}
+
+.col-num { 
+    color: #9CA3AC !important; 
+}
+
+.col-prod { 
+    font-weight: 600 !important; 
+}
+
+.col-preco { 
+    color: #9A1006 !important; 
+    font-weight: 600 !important; 
+}
+
+
+.btn-icone {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    margin-top: -6px; /* Sobe o ícone anulando o padding invisível dele */
+    padding-bottom: 0;
+}
+
+.btn-icone img { 
+    width: 20px; 
+    height: 20px; 
+}
+
+/* Cards de Produtos (Mobile) */
+.card-produto {
+    display: flex;
+    justify-content: space-between;
+    background: #FFF;
+    border: 1px solid #EDEEF0;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.card-prod-left, .card-prod-right {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.card-prod-right { 
+    align-items: flex-end;
+    margin-top: -6px;
+    gap: 2px; /* Diminuí o gap de 4px para 2px para grudar mais o custo e o preço */
+}
+
+.m-prod { 
+    color: #111827; 
+    font-size: 0.875rem; /* 14px */
+    font-weight: 600; 
+} 
+
+.m-sabor { 
+    color: #111827; 
+    font-size: 0.75rem; /* 12px */
+    font-weight: 400; 
+} 
+
+.m-peso-tipo { 
+    color: #6B7380; 
+    font-size: 0.6875rem; /* 11px */
+    font-weight: 400; 
+} 
+
+.m-preco { 
+    color: #9A1006; 
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 600; 
+} 
+
+/* #endregion */
+
+/* #region - MODAL PRODUTOS: DESKTOP */
+/* Estrutura Base Desktop */
+.modal-custom-content {
+    border-radius: 12px;
+    background: #FFF;
+    box-shadow: 0 20px 40px 0 rgba(0, 0, 0, 0.25);
+    border: none;
+    padding: 24px;
+}
+
+.modal-header-custom {
+    padding: 0 0 12px 0;
+    border-bottom: 1px solid #E5E7EB; /* Linha divisória igual aos cards */
+    margin-bottom: 16px;
+}
+
+.modal-title-custom {
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.125rem; /* 18px */
+    font-weight: 600;
+}
+
+/* Labels e Inputs */
+.form-label-custom {
+    color: #4B5563;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9375rem; /* 15px */
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.form-control-custom {
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid #EDEDED;
+    padding: 0 12px;
+    font-size: 0.875rem; /* 14px */
+    color: #111827;
+}
+
+.form-control-custom::placeholder {
+    color: #9CA3AC;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+}
+
+/* Espaçamento entre as linhas (Desktop 16px) */
+.row-gap-custom {
+    row-gap: 16px;
+}
+
+/* Botões */
+.modal-footer-custom {
+    padding: 24px 0 0 0;
+    border: none;
+    display: flex;
+    justify-content: flex-end; /* Alinhado à direita no desktop */
+    gap: 12px;
+}
+
+.btn-cancelar-custom, .btn-salvar-custom {
+    display: flex;
+    height: 36px;
+    width: 120px; 
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem; 
+    font-weight: 600
+}
+
+.btn-cancelar-custom {
+    border: 2px solid #6B7380;
+    background: #FFF;
+    color: #6B7380;
+}
+
+.btn-salvar-custom {
+    background: #9A1006;
+    color: #FFF;
+    border: none;
+}
+/* #endregion */
+
+
+
+/* 
+============================================================================================================================== 
+        TELA: ENTREGAS
+============================================================================================================================== 
+*/
+/* #region - ENTREGAS */
+
+/* Cores de Status para JS */
+.status-verde { 
+    color: #16A34A !important; 
+    font-weight: 600; 
+}
+
+.status-vermelho { 
+    color: #9A1006 !important; 
+    font-weight: 600; 
+}
+
+.status-preto { 
+    color: #111827 !important; 
+    font-weight: 600; 
+}
+
+.status-entrega-text { 
+    font-weight: 600; /* Fallback da fonte */
+} 
+
+/* Botão Taxa de Entrega (Adaptação Mobile) */
+.btn-taxa {
+    white-space: normal; /* Permite quebrar linha no mobile se não couber */
+    text-align: center;
+    line-height: 1.2;
+    padding: 8px 16px;
+    height: auto;
+    min-height: 40px;
+}
+
+/* Layout do Card Mobile de Entregas */
+.card-entrega {
+    display: flex;
+    justify-content: space-between;
+    background: #FFF;
+    border: 1px solid #EDEEF0;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.card-entrega-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.card-entrega-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Empurra os itens para os extremos verticais */
+    align-items: flex-end;
+}
+
+.m-entrega-nome {
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.m-entrega-data {
+    color: #6B7380;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.m-entrega-val, .m-entrega-itens {
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+}
+/*  #endregion  */
+
+
+/* 
+============================================================================================================================== 
+        TELA: EVOLUÇÃO
+============================================================================================================================== 
+*/
+/* #region  */
+/* Textos dos Cards */
+.titulo-card-evo {
+    color: #111827;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: normal;
+}
+.subtitulo-card-evo {
+    color: #9CA3A8;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: normal;
+    margin-top: 2px !important; /* Bem encostado no título */
+}
+
+/* Botões de Filtro */
+.btn-filtro-evo {
+    background: #F3F4F6;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: #4B5563;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Estilo para quando o botão for selecionado */
+.btn-filtro-evo.active, 
+.btn-filtro-evo:hover {
+    background: rgba(154, 16, 6, 0.1); 
+    color: #9A1006;
+    font-weight: 600;
+}
+/* #endregion */
+
+
+/* 
+============================================================================================================================== 
+        MEDIA (MAX-WIDTH:  767PX)
+============================================================================================================================== 
+*/
+/* #region */
+@media (max-width: 767px) {  
+        /* Ajustes Mobile */
+    .seletor-periodo {
+        font-size: 0.6875rem; /* 11px */
+        padding: 4px 6px;
+        height: 28px;
+    }
+
+    #filtro-mes { 
+        width: 90px; }
+    #filtro-ano { 
+        width: 70px; 
+    }
+    
+    /* Ajustes de fonte Mobile */
+    .card-historico .title { 
+        font-size: 0.5625rem; /* 9px */
+    } 
+
+    .card-historico .value { 
+        font-size: 0.875rem; /* 14px */
+    } 
+
+    .card-historico .comp { 
+        font-size: 0.625rem; /* 10px */
+    } 
+
+    /* Responsividade: Esconde a data em telas menores que Tablet (768px) */
+    .data-pagina {
+        display: none !important;
+    }
+
+    .card-maxi { 
+        padding: 8px 14px; 
+    }
+
+    .card-maxi .card-title { 
+        font-size: 0.625rem; /* 10px */
+    } 
+
+    .card-maxi .card-icon { 
+        width: 16px; 
+        height: 16px; 
+    }
+
+    .card-maxi .card-value { 
+        font-size: 1.25rem; /* 20px */
+    } 
+
+    .card-maxi .comparison-text { 
+        font-size: 0.6875rem; /* 11px */
+    } 
+
+
+    .container-filtros-estoque {
+        flex-direction: row; /* Mantém um ao lado do outro */
+        gap: 8px;
+    }
+
+    .filtro-select {
+        padding: 7px 12px;
+        gap: 6px;
+        border: 1.5px solid #E5E7EA;
+        font-size: 0.75rem; /* 12px */
+    }
+
+    .status-estoque-text {
+        font-size: 0.75rem; /* 12px */
+    }
+
+    .status-baixo { 
+        color: #D99807 !important; 
+    }
+
+    /* MODAL PRODUTOS - BOTTON SHEET */
+    /* Faz o modal preencher a largura e colar no fundo */
+    .modal-dialog-bottom {
+        display: flex;
+        align-items: flex-end;
+        min-height: 100%;
+        margin: 0;
+    }
+    
+    /* Arredonda só em cima */
+    .modal-custom-content {
+        border-radius: 12px 12px 0 0;
+        padding: 20px;
+        width: 100%;
+        max-height: 70vh; /* Trava o modal a 70% do viewport */
+        overflow-y: auto;
+    }
+
+    /* Ajuste Labels e Placeholders */
+    .form-label-custom { 
+        font-size: 0.8125rem; /* 13px */
+    } 
+
+    .form-control-custom::placeholder { 
+        font-size: 0.8125rem; /* 13px */
+        color: #C2C7CC; 
+    }
+    
+    /* Espaçamento mobile */
+    .row-gap-custom { 
+        row-gap: 14px; 
+    }
+
+    /* Botões dividem a tela 50/50 */
+    .modal-footer-custom {
+        justify-content: space-between;
+    }
+
+    .btn-cancelar-custom, .btn-salvar-custom {
+        flex: 1 0 0;
+        width: auto;
+        height: 44px; /* Altura maior para o toque */
+        padding: 0;
+        color: #4B5563; 
+    }
+
+    .btn-salvar-custom { 
+        color: #FFF; 
+    }
+
+    /* Quando o modal está fechado (.fade), jogamos ele 100% para baixo (fora da tela) */
+    .modal.fade .modal-dialog-bottom {
+        transform: translateY(100%);
+        transition: transform 0.3s ease-out; /* Deixa o movimento suave */
+    }
+    
+    /* Quando o modal abre (ganha a classe .show), ele volta para a posição 0 (encaixado no fundo) */
+    .modal.show .modal-dialog-bottom {
+        transform: translateY(0);
+    }
+
+    /* Força o arredondamento total no mobile para modais específicos */
+    .modal-totalmente-arredondado .modal-custom-content {
+        border-radius: 12px !important;
+        margin-bottom: 20px; /* Dá um pequeno espaço do rodapé do celular */
+    }
+
+    /* 
+============================================================================================================================== 
+        TELA: LOGIN
+============================================================================================================================== 
+    */
+    .login-form-container { 
+        padding: 0; 
+        margin-top: -24px; 
+        align-items: flex-start; 
+    }
+    
+
+    .login-box {
+        width: 100%; height: auto; min-height: 65vh; /* Perde os 440x514 pra caber na tela */
+        border-radius: 16px 16px 0 0; /* Arredonda só em cima */
+        padding: 32px 20px;
+    }
+
+    .login-title-mob { 
+        color: #111827; 
+        font-family: 'Inter', sans-serif; 
+        font-size: 24px; 
+        font-weight: 800; 
+        margin-bottom: 4px;
+    }
+
+    .login-subtitle { 
+        font-size: 13px; 
+    }
+
+    .login-forgot { 
+        font-size: 13px; 
+    }
+    
+    .login-btn {
+        width: 334px; 
+        height: 52px; 
+        box-shadow: 0 4px 16px 0 rgba(154, 16, 6, 0.40);
+    }
+    
+    
+    .login-footer { 
+        font-size: 11px; 
+        margin-top: 32px; 
+    }
+
+/* 
+============================================================================================================================== 
+        TELA: VENDAS
+============================================================================================================================== 
+*/
+    /* Utilitários Extras para os Botões da Toolbar no Mobile */
+    .w-md-auto { 
+        width: 100% !important; 
+    }
+
+/* 
+
+    /* 
+============================================================================================================================== 
+        TELA: ENTREGAS
+============================================================================================================================== 
+    */
+    .btn-taxa {
+        width: 100%; /* ALTERAR PARA 'AUTO', ASSIM O BOTÃO ABRAÇA O TEXTO */
+        font-size: 0.75rem; /* 12px no mobile para encaixar o texto grande */
+    }
+
+}
+
+/* #endregion */
+
+
+/* 
+============================================================================================================================== 
+        MEDIA (MIN-WIDTH:  768PX)
+============================================================================================================================== 
+*/
+/* #region - TELA: LOGIN */
+@media (min-width: 768px) {
+    
+    .bg-fundo-form {
+        background-color: #F3F4F6; 
+        margin-top: 0;
+        border-radius: 0;
+    }
+
+    .cartao-login {
+        width: 440px;
+        height: 514px;
+        flex-shrink: 0;
+        border-radius: 16px;
+        background: #FFF;
+        box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04), 0 8px 40px 0 rgba(0, 0, 0, 0.08);
+    }
+
+    /* Aumentos do formulário no Tablet */
+    .logo-form { width: 80px; }
+    .titulo-login { font-size: 1.625rem; } /* 26px */
+    .subtitulo-login { font-size: 0.875rem; } /* 14px */
+
+    /* Aumentos do banner no Tablet */
+    .logo-banner { width: 120px !important; }
+    .titulo-banner { font-size: 2rem; } /* 32px */
+    .subtitulo-banner { font-size: 1rem; } /* 16px */
+}
+/* #endregion */
+
+
+/* 
+============================================================================================================================== 
+        MEDIA (MAX-WIDTH:  991PX)
+============================================================================================================================== 
+*/
+/* #region -  */
+/* --- MEDIA QUERIES (Ajustes para Mobile/Tablet) --- */
+@media (max-width: 991px) {
+    .titulo-card-interno { 
+        font-size: 0.875rem; /* 14px */
+        font-weight: 600; 
+    } 
+
+    .link-card { 
+        font-weight: 500; 
+    }
+
+    .estoque-nome { 
+        font-size: 0.8125rem; 
+        font-weight: 500; 
+    }
+    
+    .entrega-nome { 
+        font-size: 0.8125rem; 
+        font-weight: 600; 
+    }
+
+    .entrega-end { 
+        font-size: 0.75rem; 
+    }
+
+    .badge-hora { 
+        font-size: 0.8125rem; 
+    }
+    
+    /* Inversão do layout do Top 3 */
+    .cliente-item { 
+        padding: 16px 16px; 
+    }
+
+    .cliente-pos { 
+        width: 28px; 
+        height: 28px; 
+    }
+
+    .cliente-nome { 
+        font-size: 0.875rem; 
+        font-weight: 600; 
+    }
+
+    .cliente-val { 
+        grid-column: 3; 
+        grid-row: 2; 
+        font-size: 0.875rem; 
+        font-weight: 800; 
+        justify-self: end; 
+    }
+
+    .cliente-qtd { 
+
+        grid-column: 2; 
+        grid-row: 2; 
+        color: #9CA3AC; 
+        font-size: 0.6875rem; 
+        justify-self: start; 
+    }
+    
+    .grid-produto-head { 
+        font-size: 0.625rem; 
+        font-weight: 600; 
+        letter-spacing: 0.3px; 
+        color: #6B7380; 
+    }
+
+    .prod-nome { 
+        font-size: 0.75rem; 
+        font-weight: 500; 
+    }
+
+    .prod-fat { 
+        font-size: 0.75rem; 
+    }
+
+    .prod-qtd { 
+        font-size: 0.75rem; 
+        color: #4B5563; 
+        font-weight: 500; 
+    }
+
+    /* 
+    =========================================
+   TELA: LOGIN (TABLET - 768px a 991px)
+   ========================================= 
+   */
+    .login-page { 
+        flex-direction: column; 
+    }
+    
+    .login-banner-container {
+        width: 100%; 
+        max-width: 100%; 
+        height: 35vh;
+    }
+    
+    .img-banner-mob {
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+        object-position: center; /* Centraliza a logo da imagem */
+    }
+
+    .login-form-container {
+        padding: 40px 20px; /* Dá espaço para o formulário no centro */
+    }
+    /* O .login-box mantém as configurações de 440x514 e fica flutuando no meio */
+
+}
+/* #endregion */
+
+
+/* 
+============================================================================================================================== 
+        MEDIA (MIN-WIDTH:  992PX)
+============================================================================================================================== 
+*/
+/* #region - TELA: LOGIN */
+@media (min-width: 992px) {
+    
+    /* --- AJUSTES DO BANNER --- */
+    .banner-login {
+        background-image: url('../assets/images/banner-sem-logo-desktop.png');
+        height: 100vh;
+        width: 520px;
+        flex: 0 0 520px; 
+    }
+
+    .logo-banner {
+        width: 180px !important; 
+    }
+
+    .titulo-banner {
+        font-size: 2.625rem; /* 42px */
+    }
+
+    .subtitulo-banner {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 1.125rem; /* 18px */
+    }
+
+    /* --- AJUSTES DO FORMULÁRIO --- */
+    .bloco-form { 
+        width: 360px; 
+    }
+
+    .titulo-login { 
+        font-size: 1.625rem; /* 26px */
+    }
+
+    .subtitulo-login { 
+        font-size: 0.875rem; /* 14px */
+    }
+
+    .label-login { 
+        font-size: 0.8125rem; /* 13px */
+    }
+
+    .input-login { 
+        height: 52px; 
+    }
+
+    .link-senha { 
+        font-size: 0.875rem; /* 14px */
+    }
+
+    .btn-login {
+        height: 54px;
+        box-shadow: 0 4px 16px 0 rgba(154, 16, 6, 0.35);
+    }
+
+    .rodape-login { 
+        font-size: 0.75rem; /* 12px */
+    }
+}
+/* #endregion */
+
+
+/* 
+============================================================================================================================== 
+        MEDIA (MIN-WIDTH:  992PX)
+============================================================================================================================== 
+*/
+/* #region */
+/* No Desktop: Volta ao comportamento normal de grade */
+@media (min-width: 992px) {
+    /* TELA: DASHBOARDS - CARDS SECUNDÁRIOS */
+    .scroll-horizontal {
+        overflow-x: hidden;
+        flex-wrap: wrap; /* No PC eles podem quebrar se a tela for pequena */
+    }
+
+    .card-historico {
+        flex: 1; /* Divide o espaço igualmente entre os 7 cards */
+        font-size: 0.625rem; /* 10px */
+    }
+    .card-historico .value { 
+        font-size: 1.25rem; /* 20px */
+
+    } 
+
+    /* TELA: PRODUTOS: Ajustes Desktop */
+    .toolbar-produtos {
+        flex-direction: row; /* Coloca Busca e Botão na mesma linha */
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .search-wrapper { 
+        width: 600px; 
+    }
+
+    .search-input { 
+        box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.25); 
+        border-color: #EDEDED; 
+    }
+
+    .search-input::placeholder { 
+        color: #9CA3AC; 
+    }
+
+    .btn-novo { 
+        font-size: 0.8125rem; /* 13px */
+    } 
+
+}
+
+/* #endregion */
+
+
+
+
+
+/* #region */
+
+/* #endregion */
+

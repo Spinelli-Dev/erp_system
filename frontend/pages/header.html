@@ -1,0 +1,94 @@
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #9A1006;">
+    <div class="container-fluid">
+        <!-- MARCA E TÍTULO -->
+        <div class="navbar-brand d-flex align-items-center">
+            <img src="../assets/images/login-logo-formulario.png" alt="Logo" height="45" class="me-2">
+            <div class="lh-1">
+                <h1 class="h6 mb-0 text-white fw-bold">Maxi Massas</h1>
+                <small style="font-size: 0.7rem; color: rgba(255,255,255,0.75);">Itápolis — Gestão</small>
+            </div>
+        </div>
+
+        <!-- BOTÃO HAMBURGER (Apenas Mobile) -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuLateral">
+            <span class="fs-3 text-white">☰</span>
+        </button>
+
+        <!-- MENU DESKTOP -->
+        <div class="collapse navbar-collapse d-none d-lg-flex">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item mx-1">
+                    <a class="nav-link text-white px-3" href="dashboard.html">Dashboard</a>
+                </li>
+                <li class="nav-item mx-1">
+                    <a class="nav-link text-white px-3" href="vendas.html">Vendas</a>
+                </li>
+                <li class="nav-item mx-1">
+                    <a class="nav-link text-white px-3" href="clientes.html">Clientes</a>
+                </li>
+                <li class="nav-item mx-1">
+                    <a class="nav-link text-white px-3" href="estoque.html">Estoque</a>
+                </li>
+                <li class="nav-item mx-1">
+                    <a class="nav-link text-white px-3" href="produtos.html">Produtos</a>
+                </li>
+                <li class="nav-item mx-1">
+                    <a class="nav-link text-white px-3" href="entregas.html">Entregas</a>
+                </li>
+                <li class="nav-item mx-1">
+                    <a class="nav-link text-white px-3" href="evolucao.html">Evolução</a>
+                </li>
+            </ul>
+            <!-- AVATAR USUÁRIO DESKTOP -->
+            <div class="navbar-usuario-desktop">
+                <img src="../assets/icons/icone-usuario.svg" alt="Usuário" width="50" height="50" class="rounded-circle bg-light p-1">
+                
+                <!-- Novo botão de sair -->
+                <a href="../index.html" class="text-white ms-4" title="Sair do Sistema" style="transition: opacity 0.2s;">
+                    <!-- Ícone SVG de Logout -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- MENU LATERAL (OFFCANVAS) - MOBILE -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="menuLateral" style="background-color: #FFFDF7; width: 250px;">
+    <div class="offcanvas-header text-white" style="background-color: #9A1006;">
+        <img src="../assets/images/login-logo-formulario.png" alt="Logo" height="40" class="me-2">
+        <div class="lh-1">
+            <h1 class="h6 mb-0">Maxi Massas</h1>
+            <small>Itápolis — Gestão</small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+        <ul class="list-unstyled">
+            <!-- Os links aqui levam a classe 'nav-link-custom' para o estilo de "quadradinho cinza" -->
+            <li><a class="nav-link-custom" href="dashboard.html">Dashboard</a></li>
+            <li><a class="nav-link-custom" href="vendas.html">Vendas</a></li>
+            <li><a class="nav-link-custom" href="clientes.html">Clientes</a></li>
+            <li><a class="nav-link-custom" href="estoque.html">Estoque</a></li>
+            <li><a class="nav-link-custom" href="produtos.html">Produtos</a></li>
+            <li><a class="nav-link-custom" href="entregas.html">Entregas</a></li>
+            <li><a class="nav-link-custom" href="evolucao.html">Evolução</a></li>
+        </ul>
+
+        <!-- USUÁRIO MOBILE NO RODAPÉ DO MENU -->
+        <div class="mt-auto pt-3 border-top">
+            <div class="d-flex align-items-center mb-3">
+                <img src="../assets/icons/icone-usuario.svg" alt="Usuário" width="50" class="rounded-circle bg-light p-1 me-2">
+                <div>
+                    <h6 class="mb-0">Karina</h6>
+                    <small class="text-muted">Gestora</small>
+                </div>
+            </div>
+            <a href="../index.html" class="btn w-100 text-white" style="background-color: #9A1006;">SAIR</a>
+        </div>
+    </div>
+</div>
