@@ -1,0 +1,236 @@
+@page
+@model EstoqueModel
+@{
+    // Herdado do antigo HTML estático; lista, reposição e ajuste agora são do servidor (Estoque.cshtml.cs).
+    ViewData["Title"] = "Estoque";
+}
+
+    <main class="conteudo-pagina flex-grow-1">
+        <!-- HEADER PADRÃO -->
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="titulo-pagina mb-0">Estoque</h2>
+            <!-- Data atualizada Tablet/Desktop: Aparece apenas para telas maiores -->
+            <span id="data-atual" class="data-pagina"></span>
+        </header>
+
+        @if (Model.Erro is not null)
+        {
+            <div class="alert alert-danger py-2 mb-3" role="alert">@Model.Erro</div>
+        }
+
+        <!-- FILTROS SUPERIORES -->
+        <div class="container-filtros-estoque">
+            <select class="filtro-select" id="filtroTipoEstoque">
+                <option value="">Tipo</option>
+                @foreach (var tipo in PainelFormatos.Tipos)
+                {
+                    <option value="@tipo.Value">@tipo.Value</option>
+                }
+            </select>
+
+            <select class="filtro-select" id="filtroStatusEstoque">
+                <option value="">Status Estoque</option>
+                <option value="Ok">Ok</option>
+                <option value="Baixo">Baixo</option>
+                <option value="Crítico">Crítico</option>
+                <option value="Encerrado">Encerrado</option>
+            </select>
+        </div>
+
+        <!-- TOOLBAR: Busca e Botão -->
+        <div class="toolbar-produtos">
+            <div class="search-wrapper">
+                <img src="~/assets/icons/icone-pesquisar.svg" class="search-icon" alt="Lupa">
+                <input type="text" class="search-input" id="buscaEstoque" placeholder="Buscar por nome do produto ou sabor...">
+            </div>
+
+            <button type="button" class="btn-novo" data-bs-toggle="modal" data-bs-target="#modalReposicao">
+                Reposição
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO DESKTOP (TABELA) -->
+        <!-- ========================================== -->
+        <div class="table-responsive d-none d-lg-block mb-4 tabela-container">
+            <table class="tabela-produtos tabela-estoque tabela-custom">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th id="th-produto" style="cursor:pointer; user-select: none;">Produto <span>↕</span></th>
+                        <th>Sabor</th>
+                        <th>Peso</th>
+                        <th>Tipo</th>
+                        <th>Quantidade</th>
+                        <th>Status Estoque</th>
+                        <th class="text-center">Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Produtos.Count == 0)
+                    {
+                        <tr><td colspan="8" class="text-center py-4">Nenhum produto cadastrado</td></tr>
+                    }
+                    @for (var i = 0; i < Model.Produtos.Count; i++)
+                    {
+                        var p = Model.Produtos[i];
+                        <tr>
+                            <td class="col-num">@(i + 1)</td>
+                            <td class="col-prod">@p.Nome</td>
+                            <td>@(string.IsNullOrEmpty(p.Sabor) ? "—" : p.Sabor)</td>
+                            <td>@PainelFormatos.Peso(p.Peso)</td>
+                            <td class="tipo-item">@PainelFormatos.RotuloTipo(p.Tipo)</td>
+                            <td class="qtd-item">@(p.Estoque?.Quantidade ?? 0)</td>
+                            <td class="status-estoque-text status-item"></td>
+                            <td class="text-center">
+                                @if (Model.PodeAjustar)
+                                {
+                                    <button type="button" class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalAjuste" @Html.Raw(AtributosAjuste(p))><img src="~/assets/icons/icone-edicao.svg" alt="Editar"></button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO MOBILE (CARDS) -->
+        <!-- ========================================== -->
+        <div class="d-flex flex-column gap-3 d-lg-none mb-4 container-cards-estoque">
+            @if (Model.Produtos.Count == 0)
+            {
+                <p class="text-center py-4">Nenhum produto cadastrado</p>
+            }
+            @foreach (var p in Model.Produtos)
+            {
+                <div class="card-produto card-estoque">
+                    <div class="card-prod-left">
+                        <span class="m-prod">@p.Nome</span>
+                        <span class="m-sabor">@(string.IsNullOrEmpty(p.Sabor) ? "—" : p.Sabor)</span>
+                        <span class="m-peso-tipo">@PainelFormatos.Peso(p.Peso) • <span class="tipo-item">@PainelFormatos.RotuloTipo(p.Tipo)</span></span>
+                    </div>
+                    <div class="card-prod-right">
+                        @if (Model.PodeAjustar)
+                        {
+                            <button type="button" class="btn-icone mb-1" data-bs-toggle="modal" data-bs-target="#modalAjuste" @Html.Raw(AtributosAjuste(p))><img src="~/assets/icons/icone-edicao.svg" alt="Editar"></button>
+                        }
+                        <span class="m-qtd">@(p.Estoque?.Quantidade ?? 0) un.</span>
+                        <span class="status-estoque-text status-item"></span>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL 1: REPOSIÇÃO EM MASSA (Bottom Sheet no Mobile) -->
+    <!-- ========================================== -->
+    <div class="modal fade" id="modalReposicao" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-produto-custom modal-totalmente-arredondado">
+            <div class="modal-content modal-custom-content">
+
+                <div class="modal-header modal-header-custom d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title-custom mb-0">Reposição</h5>
+                </div>
+
+                <div class="modal-body p-0">
+                    <form method="post" asp-page-handler="Reposicao" id="formReposicao">
+                        <div class="row m-0">
+                            <div class="col-12 p-0 mt-2">
+                                @{ var indice = 0; }
+                                @foreach (var grupo in Model.GruposReposicao)
+                                {
+                                    <div class="card-reposicao">
+                                        <div class="card-reposicao-header">@grupo.Key</div>
+                                        <div class="card-reposicao-body">
+                                            @foreach (var p in grupo)
+                                            {
+                                                <div class="linha-produto-reposicao">
+                                                    <span class="sabor-peso-text">@(string.IsNullOrEmpty(p.Sabor) ? "Tradicional" : p.Sabor) • @PainelFormatos.Peso(p.Peso)</span>
+                                                    <div class="contador-wrapper">
+                                                        <input type="hidden" name="itens[@indice].ProdutoId" value="@p.Id">
+                                                        <input type="hidden" name="itens[@indice].Quantidade" value="0" class="qtd-reposicao">
+                                                        <button type="button" class="btn-contador btn-menos">-</button>
+                                                        <span class="qtd-contador">0</span>
+                                                        <button type="button" class="btn-contador btn-mais">+</button>
+                                                    </div>
+                                                </div>
+                                                indice++;
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.Produtos.Count == 0)
+                                {
+                                    <p class="text-center py-4">Nenhum produto cadastrado</p>
+                                }
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer modal-footer-custom">
+                    <button type="button" class="btn-cancelar-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formReposicao" class="btn-salvar-custom" id="btnSalvarReposicao">Salvar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL 2: AJUSTE DE ESTOQUE (Centralizado Desktop e Mobile) -->
+    <!-- ========================================== -->
+    <div class="modal fade" id="modalAjuste" tabindex="-1" aria-hidden="true">
+        <!-- mx-auto para manter sempre no centro -->
+        <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 350px;">
+            <div class="modal-content modal-ajuste-content shadow">
+
+                <div class="modal-header modal-header-custom d-flex justify-content-between align-items-center border-0 mb-0 pb-2">
+                    <h5 class="modal-title-custom mb-0">Ajustar Estoque</h5>
+                </div>
+
+                <div class="modal-body p-0 mt-3">
+                    <form method="post" asp-page-handler="Ajuste" id="formAjuste">
+                        <input type="hidden" name="produtoId" id="inputAjusteProdutoId">
+
+                        <!-- Info de Leitura -->
+                        <div class="info-produto-ajuste">
+                            <p id="ajusteNome"><strong>Produto</strong></p>
+                            <p id="ajusteSabor">Sabor</p>
+                            <p id="ajustePeso">Peso</p>
+                        </div>
+
+                        <!-- Input de Ajuste -->
+                        <div>
+                            <label class="form-label-custom" for="inputAjusteQtd">Novo Estoque Exato *</label>
+                            <input type="number" min="0" class="form-control form-control-custom w-100" id="inputAjusteQtd" name="quantidade" placeholder="Ex: 10" required>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer modal-footer-custom mt-4 p-0">
+                    <button type="button" class="btn-cancelar-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formAjuste" class="btn-salvar-custom" id="btnSalvarAjuste">Salvar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+@functions {
+    /// <summary>Dados do produto no botão de ajuste (o modal é preenchido a partir deles).</summary>
+    static string AtributosAjuste(MaxiMassasAPI.DTOs.Response.ProdutoResponse p)
+    {
+        string A(string nome, string? valor) => $"data-{nome}=\"{System.Net.WebUtility.HtmlEncode(valor ?? "")}\"";
+        return string.Join(" ", A("produto-id", p.Id.ToString()), A("nome", p.Nome), A("sabor", p.Sabor),
+            A("peso", PainelFormatos.Peso(p.Peso)), A("qtd", (p.Estoque?.Quantidade ?? 0).ToString()));
+    }
+}

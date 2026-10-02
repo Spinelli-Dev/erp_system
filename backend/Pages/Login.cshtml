@@ -1,0 +1,51 @@
+@page
+@model LoginModel
+@{
+    // Tela própria, sem o menu do painel.
+    Layout = "_LayoutAcesso";
+    ViewData["Title"] = "Login";
+}
+<!-- Títulos sempre alinhados à esquerda (text-start) -->
+<h3 class="titulo-login d-block d-lg-none text-start">Bem-vindo(a) de volta!</h3>
+<h3 class="titulo-login d-none d-lg-block text-start">Acesse sua conta</h3>
+
+<p class="subtitulo-login text-start">Entre com suas credenciais para continuar</p>
+
+@if (TempData["Aviso"] is string aviso)
+{
+    <div class="alert alert-success py-2 text-center mb-3" role="status" style="font-size: 0.875rem; border-radius: 8px;">@aviso</div>
+}
+
+<form method="post">
+    <input type="hidden" asp-for="ReturnUrl">
+
+    <div class="mb-3">
+        <label for="usuario" class="label-login">Usuário</label>
+        <input type="text" class="input-login w-100" id="usuario" name="Usuario" value="@Model.Usuario"
+               placeholder="seu usuário" autocomplete="username" autocapitalize="none" required autofocus>
+    </div>
+
+    <div class="mb-2">
+        <label for="senha" class="label-login">Senha</label>
+        <div class="position-relative">
+            <input type="password" class="input-login w-100" id="senha" name="Senha"
+                   placeholder="••••••••" autocomplete="current-password" required>
+            <button type="button" class="btn-mostrar-senha" onclick="alternarSenha()">
+                <img src="~/assets/icons/icone-ver.svg" id="icone-senha" alt="Ver senha">
+            </button>
+        </div>
+    </div>
+
+    <a asp-page="/EsqueciSenha" class="link-senha">Esqueci minha senha</a>
+
+    @if (Model.Erro is not null)
+    {
+        <div id="mensagem-erro" class="alert alert-danger py-2 text-center mt-3 mb-0" role="alert" style="font-size: 0.875rem; border-radius: 8px;">
+            @Model.Erro
+        </div>
+    }
+
+    <button type="submit" class="btn-login w-100 mt-4">
+        ENTRAR
+    </button>
+</form>

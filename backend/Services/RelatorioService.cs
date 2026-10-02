@@ -79,11 +79,12 @@ public class RelatorioService : IRelatorioService
             .Include(i => i.Venda).Include(i => i.Produto)
             .Where(i => i.Venda.Data >= ini && i.Venda.Data < fimD
                      && i.Venda.Status != StatusVenda.Cancelada) // UML: StatusVenda
-            .GroupBy(i => new { i.ProdutoId, i.Produto.Nome })
+            .GroupBy(i => new { i.ProdutoId, i.Produto.Nome, i.Produto.Sabor })
             .Select(g => new ProdutoMaisVendidoDto
             {
                 ProdutoId = g.Key.ProdutoId,
-                NomeProduto = g.Key.Nome,
+                // Nome + sabor ("Pizza Calabresa"), montado no próprio SQL
+                NomeProduto = g.Key.Sabor == null || g.Key.Sabor == "" ? g.Key.Nome : g.Key.Nome + " " + g.Key.Sabor,
                 QuantidadeVendida = g.Sum(i => i.Quantidade),
                 TotalFaturado = g.Sum(i => i.Subtotal)
             })

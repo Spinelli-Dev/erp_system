@@ -7,4 +7,5 @@ public interface IVendaRepository : IRepository<Venda>
     Task<Venda?> GetVendaComDetalhesAsync(int id);
     Task<IEnumerable<Venda>> GetVendasPorPeriodoAsync(DateTime inicio, DateTime fim);
     Task<IEnumerable<Venda>> GetVendasComDetalhesAsync();
+    Task<IEnumerable<Venda>> GetVendasDoClienteAsync(int clienteId);
 }

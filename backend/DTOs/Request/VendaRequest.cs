@@ -23,6 +23,12 @@ public class VendaRequest
     public List<ItemVendaRequest> Itens { get; set; } = new();
     public PagamentoRequest Pagamento { get; set; } = new();
     public EntregaRequest? Entrega { get; set; }
+
+    /// <summary>
+    /// Status inicial (opcional): Aberta (padrão), EmProcessamento ou EmEntrega ("Agendado" no painel).
+    /// Ignorado quando o pagamento já vem como Pago — a venda nasce Concluida.
+    /// </summary>
+    public StatusVenda? Status { get; set; }
 }
 
 /// <summary>
@@ -41,4 +47,10 @@ public class VendaUpdateRequest
     public DateTime? DataPagamento { get; set; }
 
     public string Origem { get; set; } = string.Empty;
+
+    /// <summary>Troca a forma de pagamento (opcional; nulo mantém a atual).</summary>
+    public FormaPagamento? FormaPagamento { get; set; }
+
+    /// <summary>Troca a observação da venda (opcional; nulo mantém a atual).</summary>
+    public string? Observacao { get; set; }
 }

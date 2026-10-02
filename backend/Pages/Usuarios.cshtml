@@ -1,0 +1,240 @@
+@page
+@model UsuariosModel
+@using Microsoft.AspNetCore.Html
+@{
+    ViewData["Title"] = "Usuários";
+}
+
+    <main class="conteudo-pagina flex-grow-1">
+        <!-- HEADER PADRÃO -->
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="titulo-pagina mb-0">Usuários</h2>
+            <span id="data-atual" class="data-pagina d-none d-md-block"></span>
+        </header>
+
+        @if (Model.Erro is not null)
+        {
+            <div class="alert alert-danger py-2 mb-3" role="alert">@Model.Erro</div>
+        }
+
+        <!-- TOOLBAR: Busca e Botão -->
+        <div class="toolbar-produtos">
+            <div class="search-wrapper">
+                <img src="~/assets/icons/icone-pesquisar.svg" class="search-icon" alt="Lupa">
+                <input type="text" class="search-input" id="buscaUsuario" placeholder="Buscar por nome, login ou e-mail...">
+            </div>
+            <button type="button" class="btn-novo" data-bs-toggle="modal" data-bs-target="#modalUsuario" data-id="0">
+                + NOVO USUÁRIO
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO DESKTOP (TABELA) -->
+        <!-- ========================================== -->
+        <div class="table-responsive d-none d-lg-block mb-4 tabela-container">
+            <table class="tabela-produtos tabela-custom w-100">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Nome</th>
+                        <th>Login</th>
+                        <th>E-mail</th>
+                        <th>Telefone</th>
+                        <th>Perfil</th>
+                        <th>Situação</th>
+                        <th class="text-center">Editar</th>
+                        <th class="text-center">Acesso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model.Usuarios)
+                    {
+                        <tr class="linha-usuario" style="@(u.Ativo ? "" : "opacity: 0.55;")">
+                            <td>@Avatar(u, 36)</td>
+                            <td class="col-prod">@u.Nome @if (u.Id == Model.MeuId) { <small class="text-muted">(você)</small> }</td>
+                            <td>@u.Login</td>
+                            <td>@(u.Email ?? "—")</td>
+                            <td>@(u.Telefone ?? "—")</td>
+                            <td>@(u.Tipo == TipoUsuario.Administrador ? "Administrador" : "Operador")</td>
+                            <td class="@(u.Ativo ? "text-success" : "text-muted") fw-semibold">@(u.Ativo ? "Ativo" : "Desativado")</td>
+                            <td class="text-center">
+                                <button type="button" class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalUsuario" @Html.Raw(AtributosUsuario(u)) title="Editar @u.Login"><img src="~/assets/icons/icone-edicao.svg" alt="Editar"></button>
+                            </td>
+                            <td class="text-center">@BotaoAtivo(u)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO MOBILE (CARDS) -->
+        <!-- ========================================== -->
+        <div class="d-flex flex-column gap-3 d-lg-none mb-4">
+            @foreach (var u in Model.Usuarios)
+            {
+                <div class="card-produto card-usuario" style="@(u.Ativo ? "" : "opacity: 0.55;")">
+                    <div class="d-flex align-items-center gap-3 flex-grow-1">
+                        @Avatar(u, 44)
+                        <div class="d-flex flex-column">
+                            <span class="m-prod">@u.Nome</span>
+                            <span class="m-sabor">@u.Login • @(u.Tipo == TipoUsuario.Administrador ? "Administrador" : "Operador")</span>
+                            <span class="m-sabor @(u.Ativo ? "text-success" : "")">@(u.Ativo ? "Ativo" : "Desativado")</span>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column align-items-end gap-1">
+                        <button type="button" class="btn-icone" data-bs-toggle="modal" data-bs-target="#modalUsuario" @Html.Raw(AtributosUsuario(u))><img src="~/assets/icons/icone-edicao.svg" alt="Editar"></button>
+                        @BotaoAtivo(u)
+                    </div>
+                </div>
+            }
+        </div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL: CADASTRAR / EDITAR USUÁRIO           -->
+    <!-- ========================================== -->
+    <div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="tituloModalUsuario" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-bottom" style="max-width: 560px;">
+            <div class="modal-content modal-custom-content">
+
+                <div class="modal-header-custom d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title-custom" id="tituloModalUsuario">Novo Usuário</h5>
+                </div>
+
+                <div class="modal-body p-0 mt-3">
+                    <form id="formUsuario" method="post" asp-page-handler="Salvar" autocomplete="off">
+                        <input type="hidden" name="Usuario.Id" id="usuId" value="@Model.Usuario.Id">
+                        @if (Model.ErrosFormulario.Count > 0)
+                        {
+                            <div class="alert alert-danger py-2 small" role="alert" id="errosUsuario">
+                                @foreach (var erro in Model.ErrosFormulario) { <div>@erro</div> }
+                            </div>
+                        }
+                        <div class="row gx-3 gy-2">
+                            <div class="col-12">
+                                <label class="form-label-custom" for="usuNome">Nome *</label>
+                                <input type="text" class="form-control form-control-custom" id="usuNome" name="Usuario.Nome" value="@Model.Usuario.Nome" maxlength="150" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label-custom" for="usuLogin">Login *</label>
+                                <input type="text" class="form-control form-control-custom" id="usuLogin" name="Usuario.Login" value="@Model.Usuario.Login" maxlength="50" pattern="[A-Za-z0-9_]{3,50}" title="De 3 a 50 letras, números ou _" placeholder="ex.: mariasilva">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label-custom" for="usuTipo">Perfil *</label>
+                                <select class="form-control form-control-custom form-select" id="usuTipo" name="Usuario.Tipo">
+                                    <option value="Operador" selected="@(Model.Usuario.Tipo == TipoUsuario.Operador)">Operador</option>
+                                    <option value="Administrador" selected="@(Model.Usuario.Tipo == TipoUsuario.Administrador)">Administrador</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-7">
+                                <label class="form-label-custom" for="usuEmail">E-mail</label>
+                                <input type="email" class="form-control form-control-custom" id="usuEmail" name="Usuario.Email" value="@Model.Usuario.Email" maxlength="150">
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <label class="form-label-custom" for="usuTelefone">Telefone</label>
+                                <input type="tel" class="form-control form-control-custom mascara-telefone" id="usuTelefone" name="Usuario.Telefone" value="@Model.Usuario.Telefone" maxlength="20" placeholder="(16) 99999-9999">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label-custom" for="usuSenha" id="rotuloSenha">Senha *</label>
+                                <input type="password" class="form-control form-control-custom" id="usuSenha" name="Usuario.Senha" autocomplete="new-password">
+                                <small class="text-muted d-block mt-1" id="ajudaSenha">@MaxiMassasAPI.Services.PoliticaSenha.Descricao.</small>
+                            </div>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            <strong>Operador</strong>: vendas, clientes e reposição de estoque.
+                            <strong>Administrador</strong>: tudo, inclusive produtos, ajuste de estoque, relatórios, taxa de entrega e usuários.
+                        </small>
+                    </form>
+                </div>
+
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-cancelar-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formUsuario" class="btn-salvar-custom" id="btnSalvarUsuario">Salvar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+@functions {
+    IHtmlContent Avatar(MaxiMassasAPI.DTOs.Response.UsuarioResponse u, int tamanho) => u.TemFoto
+        ? new HtmlString($"<img src=\"/Foto/{u.Id}?v={u.FotoAtualizadaEm!.Value.Ticks}\" alt=\"\" width=\"{tamanho}\" height=\"{tamanho}\" class=\"rounded-circle\" style=\"object-fit: cover;\">")
+        : new HtmlString($"<img src=\"/assets/icons/icone-usuario.svg\" alt=\"\" width=\"{tamanho}\" height=\"{tamanho}\" class=\"rounded-circle bg-light p-1\">");
+
+    /// <summary>Dados do usuário no botão de editar (o modal é preenchido a partir deles).</summary>
+    static string AtributosUsuario(MaxiMassasAPI.DTOs.Response.UsuarioResponse u)
+    {
+        string A(string nome, string? valor) => $"data-{nome}=\"{System.Net.WebUtility.HtmlEncode(valor ?? "")}\"";
+        return string.Join(" ", A("id", u.Id.ToString()), A("nome", u.Nome), A("login", u.Login), A("email", u.Email),
+            A("telefone", u.Telefone), A("tipo", u.Tipo.ToString()));
+    }
+
+    /// <summary>Ativar/desativar (não aparece para o próprio usuário logado).</summary>
+    IHtmlContent BotaoAtivo(MaxiMassasAPI.DTOs.Response.UsuarioResponse u)
+    {
+        if (u.Id == Model.MeuId) return new HtmlString("<span class=\"text-muted\">—</span>");
+        var acao = u.Ativo ? "Desativar" : "Ativar";
+        var confirmacao = u.Ativo
+            ? $"Desativar {u.Login}? Ele não conseguirá mais entrar no sistema."
+            : $"Ativar {u.Login}? Ele voltará a entrar no sistema.";
+        var token = Html.AntiForgeryToken();
+        using var escrita = new System.IO.StringWriter();
+        token.WriteTo(escrita, System.Text.Encodings.Web.HtmlEncoder.Default);
+        return new HtmlString(
+            $"<form method=\"post\" action=\"/Usuarios?handler=Ativo\" class=\"d-inline\" onsubmit=\"return confirm('{System.Web.HttpUtility.JavaScriptStringEncode(confirmacao)}')\">" +
+            escrita +
+            $"<input type=\"hidden\" name=\"id\" value=\"{u.Id}\"><input type=\"hidden\" name=\"ativo\" value=\"{(!u.Ativo).ToString().ToLower()}\">" +
+            $"<button type=\"submit\" class=\"btn btn-sm {(u.Ativo ? "btn-outline-secondary" : "btn-outline-success")}\">{acao}</button></form>");
+    }
+}
+
+@section Scripts {
+    <script src="~/js/usuarios.js" asp-append-version="true"></script>
+    <script>
+        // Modal: "+ NOVO" abre vazio; o lápis abre com os dados do usuário (login não muda depois de criado).
+        const modalUsuario = document.getElementById('modalUsuario');
+        function prepararModalUsuario(dados) {
+            const novo = !dados.id || dados.id === '0';
+            document.getElementById('usuId').value = novo ? '0' : dados.id;
+            document.getElementById('usuNome').value = dados.nome || '';
+            document.getElementById('usuLogin').value = dados.login || '';
+            document.getElementById('usuEmail').value = dados.email || '';
+            document.getElementById('usuTelefone').value = dados.telefone || '';
+            document.getElementById('usuTipo').value = dados.tipo || 'Operador';
+            document.getElementById('usuSenha').value = '';
+            document.getElementById('usuLogin').readOnly = !novo;
+            document.getElementById('usuLogin').required = novo;
+            document.getElementById('usuSenha').required = novo;
+            document.getElementById('rotuloSenha').textContent = novo ? 'Senha *' : 'Nova senha (deixe em branco para manter a atual)';
+            document.getElementById('tituloModalUsuario').textContent = novo ? 'Novo Usuário' : 'Editar Usuário';
+        }
+        modalUsuario.addEventListener('show.bs.modal', (event) => {
+            if (!event.relatedTarget) return; // reaberto pelo servidor após erro: mantém o que foi digitado
+            const erros = document.getElementById('errosUsuario');
+            if (erros) erros.remove();
+            prepararModalUsuario(event.relatedTarget.dataset);
+        });
+        document.getElementById('formUsuario').addEventListener('submit', () => {
+            const botao = document.getElementById('btnSalvarUsuario');
+            botao.disabled = true;
+            botao.textContent = 'Salvando...';
+        });
+
+        // Busca (sem acentos) na tabela e nos cartões.
+        document.getElementById('buscaUsuario').addEventListener('input', function () {
+            const termo = normalizarBusca(this.value);
+            document.querySelectorAll('.linha-usuario').forEach(l => { l.style.display = normalizarBusca(l.textContent).includes(termo) ? '' : 'none'; });
+            document.querySelectorAll('.card-usuario').forEach(c => { c.style.display = normalizarBusca(c.textContent).includes(termo) ? 'flex' : 'none'; });
+        });
+
+        @if (Model.ErrosFormulario.Count > 0)
+        {
+            <text>
+            prepararModalUsuario({ id: '@Model.Usuario.Id', nome: document.getElementById('usuNome').value, login: document.getElementById('usuLogin').value,
+                email: document.getElementById('usuEmail').value, telefone: document.getElementById('usuTelefone').value, tipo: '@Model.Usuario.Tipo' });
+            bootstrap.Modal.getOrCreateInstance(modalUsuario).show();
+            </text>
+        }
+    </script>
+}

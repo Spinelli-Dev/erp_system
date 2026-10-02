@@ -18,7 +18,7 @@ public class VendaResponse
     public string Origem { get; set; } = string.Empty;
     public int ClienteId { get; set; }
     public string NomeCliente { get; set; } = string.Empty;
-    public int UsuarioId { get; set; }
+    public int? UsuarioId { get; set; }
     public string NomeUsuario { get; set; } = string.Empty;
     public List<ItemVendaResponse> Itens { get; set; } = new();
     public PagamentoResponse? Pagamento { get; set; }

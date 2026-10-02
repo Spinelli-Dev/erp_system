@@ -1,7 +1,8 @@
 // US16 — Implementação do Serviço de E-mail
 // Usa MailKit para envio real via SMTP.
-// Em ambiente de desenvolvimento (EmailSettings:MockMode = true), apenas loga o e-mail
-// sem enviá-lo de verdade — ideal para testes sem conta SMTP configurada.
+// Em ambiente de desenvolvimento (EmailSettings:MockMode = true), não envia de verdade:
+// registra no log e grava cada e-mail como .html na pasta EmailsTeste (dá para abrir e clicar no link).
+using System.Net;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
@@ -12,15 +13,12 @@ namespace MaxiMassasAPI.Services;
 /// Serviço de envio de e-mail usando MailKit.
 /// Configuração em appsettings.json na seção "EmailSettings".
 ///
-/// Para desenvolvimento: defina "MockMode": true e o e-mail é apenas logado.
+/// Para desenvolvimento: defina "MockMode": true e o e-mail é apenas registrado.
 /// Para produção: configure Host, Port, Username, Password e MockMode: false.
 /// </summary>
 public class EmailService : IEmailService
 {
-    private readonly IConfiguration _config;
     private readonly ILogger<EmailService> _logger;
-
-    // Lê as configurações uma vez no construtor
     private readonly string _host;
     private readonly int _port;
     private readonly string _username;
@@ -28,11 +26,10 @@ public class EmailService : IEmailService
     private readonly string _remetente;
     private readonly string _nomeRemetente;
     private readonly bool _mockMode;
-    private readonly string _urlBase;
+    private readonly string _pastaTeste;
 
-    public EmailService(IConfiguration config, ILogger<EmailService> logger)
+    public EmailService(IConfiguration config, ILogger<EmailService> logger, IWebHostEnvironment ambiente)
     {
-        _config = config;
         _logger = logger;
 
         var section = config.GetSection("EmailSettings");
@@ -43,43 +40,51 @@ public class EmailService : IEmailService
         _remetente = section["Remetente"] ?? "noreply@maximassas.com.br";
         _nomeRemetente = section["NomeRemetente"] ?? "MaxiMassas Sistema";
         _mockMode = section.GetValue<bool>("MockMode", true); // padrão: mock ativo
-        _urlBase = section["UrlBase"] ?? "http://localhost:5000";
+        _pastaTeste = Path.Combine(ambiente.ContentRootPath, "EmailsTeste");
     }
 
-    /// <inheritdoc/>
-    public async Task EnviarEmailResetSenhaAsync(string destinatario, string nomeUsuario, string token)
-    {
-        // Monta o link que o usuário receberá no e-mail
-        // Em produção, este link aponta para o front-end que chama POST /auth/reset-password
-        var link = $"{_urlBase}/redefinir-senha?token={Uri.EscapeDataString(token)}";
+    public Task EnviarLinkRedefinicaoAsync(string destinatario, string nome, string link)
+        => EnviarAsync(destinatario, "Maxi Massas — Criar uma nova senha", Modelo(nome, $@"
+            <p>Recebemos um pedido para criar uma nova senha de acesso ao <strong>Sistema de Gestão Maxi Massas</strong>.</p>
+            <p style=""text-align:center;margin:28px 0;"">
+                <a href=""{WebUtility.HtmlEncode(link)}"" style=""background:#9A1006;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;"">Criar nova senha</a>
+            </p>
+            <p>O link vale por <strong>1 hora</strong> e só pode ser usado uma vez.</p>
+            <p style=""color:#6B7280;font-size:13px;"">Se o botão não abrir, copie este endereço no navegador:<br>{WebUtility.HtmlEncode(link)}</p>"));
 
-        var assunto = "MaxiMassas — Redefinição de Senha";
-        var corpo = $@"
-            <h2>Olá, {nomeUsuario}!</h2>
-            <p>Recebemos uma solicitação de redefinição de senha para sua conta na <strong>MaxiMassas</strong>.</p>
-            <p>Clique no link abaixo para criar uma nova senha. 
-               <strong>Este link expira em 1 hora</strong> e pode ser usado apenas uma vez.</p>
-            <p><a href='{link}' style='background:#e67e22;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;'>
-               Redefinir minha senha
-            </a></p>
-            <p>Se você não solicitou a redefinição, ignore este e-mail.</p>
-            <hr/>
-            <small>MaxiMassas — Sistema de Gestão</small>
-        ";
+    public Task EnviarCodigoRedefinicaoAsync(string destinatario, string nome, string codigo)
+        => EnviarAsync(destinatario, $"Maxi Massas — Seu código: {codigo}", Modelo(nome, $@"
+            <p>Use este código no app <strong>Maxi Massas</strong> para criar uma nova senha:</p>
+            <p style=""text-align:center;margin:28px 0;font-size:34px;letter-spacing:10px;font-weight:700;color:#9A1006;"">{codigo}</p>
+            <p>O código vale por <strong>15 minutos</strong>. Não compartilhe com ninguém — a Maxi Massas nunca pede esse código.</p>"));
 
-        await EnviarAsync(destinatario, assunto, corpo);
-    }
+    /// <summary>Moldura comum dos e-mails (cores da marca).</summary>
+    private static string Modelo(string nome, string conteudo) => $@"
+        <div style=""font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;border:1px solid #EEEFF1;border-radius:12px;overflow:hidden;"">
+            <div style=""background:#9A1006;color:#fff;padding:18px 24px;font-size:20px;font-weight:700;"">Maxi Massas</div>
+            <div style=""padding:24px;color:#111827;font-size:15px;line-height:1.5;"">
+                <p>Olá, {WebUtility.HtmlEncode(nome)}!</p>
+                {conteudo}
+                <p style=""color:#6B7280;font-size:13px;margin-top:24px;"">Se você não pediu isso, ignore este e-mail: sua senha continua a mesma.</p>
+            </div>
+            <div style=""background:#F9F9FA;color:#9CA3AC;padding:12px 24px;font-size:12px;"">Maxi Massas Itápolis</div>
+        </div>";
 
     /// <inheritdoc/>
     public async Task EnviarAsync(string destinatario, string assunto, string corpo)
     {
-        // MODO MOCK: apenas loga — útil em dev/staging sem SMTP real configurado
+        // MODO MOCK: não envia — registra no log e grava o e-mail em EmailsTeste/*.html
         if (_mockMode)
         {
-            _logger.LogInformation(
-                "[EmailService:MOCK] Para={Para} | Assunto={Assunto} | Corpo={Corpo}",
-                destinatario, assunto, corpo);
-            return; // Retorna sem enviar
+            Directory.CreateDirectory(_pastaTeste);
+            var arquivo = Path.Combine(_pastaTeste,
+                $"{DateTime.Now:yyyyMMdd-HHmmss}-{string.Concat(destinatario.Split(Path.GetInvalidFileNameChars()))}.html");
+            await File.WriteAllTextAsync(arquivo,
+                $"<!doctype html><meta charset=\"utf-8\"><title>{WebUtility.HtmlEncode(assunto)}</title>" +
+                $"<p style=\"font-family:Arial;color:#6B7280\">[MODO TESTE] Para: {WebUtility.HtmlEncode(destinatario)} — Assunto: {WebUtility.HtmlEncode(assunto)}</p>{corpo}");
+            _logger.LogInformation("[EmailService:MOCK] Para={Para} | Assunto={Assunto} | Gravado em {Arquivo}",
+                destinatario, assunto, arquivo);
+            return;
         }
 
         // MODO REAL: envia via SMTP usando MailKit
@@ -105,7 +110,7 @@ public class EmailService : IEmailService
         {
             // Log do erro sem travar o fluxo principal (falha de e-mail não deve derrubar a API)
             _logger.LogError(ex, "[EmailService] Falha ao enviar e-mail para {Para}", destinatario);
-            throw; // Relança para o controller tratar e retornar mensagem adequada
+            throw; // Relança para o chamador tratar
         }
     }
 }

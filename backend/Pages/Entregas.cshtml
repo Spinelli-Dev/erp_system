@@ -1,0 +1,218 @@
+@page
+@model EntregasModel
+@{
+    // Herdado do antigo HTML estático; lista e taxa de entrega agora são do servidor (Entregas.cshtml.cs).
+    ViewData["Title"] = "Entregas";
+    var meses = new[] { "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" };
+    // Com erro, o modal volta com o que foi digitado; senão, com os valores atuais.
+    var minimoNoModal = Model.MinimoDigitado ?? PainelFormatos.Moeda(Model.Taxa.PedidoMinimoEntregaGratis);
+    var taxaNoModal = Model.TaxaDigitada ?? PainelFormatos.Moeda(Model.Taxa.TaxaEntrega);
+}
+
+    <main class="conteudo-pagina flex-grow-1">
+        <!-- HEADER PADRÃO -->
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="titulo-pagina mb-0">Entregas</h2>
+            <!-- Data atualizada Tablet/Desktop: Aparece apenas para telas maiores -->
+            <span id="data-atual" class="data-pagina d-none d-md-block"></span>
+        </header>
+
+        <!-- FILTROS SUPERIORES (Estilo reaproveitado do Estoque) -->
+        <div class="container-filtros-entregas d-flex flex-wrap gap-2 mb-3">
+            <select class="filtro-select" id="filtroMesEntregas">
+                <option value="">Mês</option>
+                @for (var m = 0; m < 12; m++)
+                {
+                    <option value="@((m + 1).ToString("00"))">@meses[m]</option>
+                }
+            </select>
+
+            <select class="filtro-select" id="filtroAnoEntregas">
+                <option value="">Ano</option>
+                @foreach (var ano in Model.Anos)
+                {
+                    <option value="@ano">@ano</option>
+                }
+            </select>
+
+            <select class="filtro-select" id="filtroStatusEntregas">
+                <option value="">Status</option>
+                <option value="Concluído">Concluído</option>
+                <option value="Pendente">Pendente</option>
+                <option value="Cancelado">Cancelado</option>
+            </select>
+        </div>
+
+        <!-- TOOLBAR: Busca e Botão Taxa -->
+        <div class="toolbar-produtos">
+            <div class="search-wrapper">
+                <img src="~/assets/icons/icone-pesquisar.svg" class="search-icon" alt="Lupa">
+                <input type="text" class="search-input" id="buscaEntrega" placeholder="Buscar por cliente, endereço...">
+            </div>
+
+            <button type="button" class="btn-novo btn-taxa" data-bs-toggle="modal" data-bs-target="#modalTaxa">
+                PEDIDO MÍNIMO E TAXA DE ENTREGA
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO DESKTOP (TABELA) -->
+        <!-- ========================================== -->
+        <div class="table-responsive d-none d-lg-block mb-4 tabela-container">
+            <!-- Reaproveitando classes da tabela de clientes para scroll -->
+            <table class="tabela-produtos tabela-clientes w-100 tabela-custom">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th class="coluna-ordenavel">Cliente <span>↕</span></th>
+                        <th class="coluna-ordenavel">Data <span>↕</span></th>
+                        <th>Hora</th>
+                        <th>Rua</th>
+                        <th>Nº</th>
+                        <th>Bairro</th>
+                        <th>Comp.</th>
+                        <th>Cidade</th>
+                        <th>Itens</th>
+                        <th>Taxa de Entrega</th>
+                        <th>Valor</th>
+                        <th class="coluna-ordenavel">Status <span>↕</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Linhas.Count == 0)
+                    {
+                        <tr><td colspan="13" class="text-center py-4">Nenhuma entrega registrada</td></tr>
+                    }
+                    @for (var i = 0; i < Model.Linhas.Count; i++)
+                    {
+                        var (v, end) = (Model.Linhas[i].Venda, Model.Linhas[i].Endereco);
+                        var entrega = v.Entrega!;
+                        <tr>
+                            <td class="col-num">@(i + 1)</td>
+                            <td class="col-prod">@v.NomeCliente</td>
+                            <td>@entrega.DataEntrega.ToString("dd/MM/yyyy")</td>
+                            <td>@EntregasModel.Ou(entrega.Horario)</td>
+                            <td>@EntregasModel.Ou(end.Rua)</td>
+                            <td>@EntregasModel.Ou(end.Numero)</td>
+                            <td>@EntregasModel.Ou(end.Bairro)</td>
+                            <td>@EntregasModel.Ou(end.Complemento)</td>
+                            <td>@EntregasModel.Ou(end.Cidade)</td>
+                            <td>@v.Itens.Sum(it => it.Quantidade)</td>
+                            <td>@(entrega.ValorEntrega > 0 ? PainelFormatos.Moeda(entrega.ValorEntrega) : "—")</td>
+                            <td class="col-preco">@PainelFormatos.Moeda(v.ValorTotal)</td>
+                            <td class="status-entrega-text">@EntregasModel.RotuloStatus(v.Status)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO MOBILE (CARDS) -->
+        <!-- ========================================== -->
+        <div class="d-flex flex-column gap-3 d-lg-none mb-4 container-cards-entregas">
+            @if (Model.Linhas.Count == 0)
+            {
+                <p class="text-center py-4">Nenhuma entrega registrada</p>
+            }
+            @foreach (var linha in Model.Linhas)
+            {
+                var v = linha.Venda;
+                var entrega = v.Entrega!;
+                var end = linha.Endereco;
+                var totalItens = v.Itens.Sum(it => it.Quantidade);
+                <div class="card-entrega">
+                    <div class="card-entrega-left">
+                        <span class="m-entrega-nome">@v.NomeCliente</span>
+                        <span class="m-entrega-data">@entrega.DataEntrega.ToString("dd/MM/yyyy")  •  @EntregasModel.Ou(entrega.Horario)</span>
+                        <span class="m-entrega-data">@(string.IsNullOrEmpty(end.Rua) ? "—" : $"{end.Rua}, {(string.IsNullOrEmpty(end.Numero) ? "s/n" : end.Numero)} — {end.Bairro}")</span>
+                        <span class="m-entrega-val">Taxa: @(entrega.ValorEntrega > 0 ? PainelFormatos.Moeda(entrega.ValorEntrega) : "—")  •  <span style="font-weight: 600;">@PainelFormatos.Moeda(v.ValorTotal)</span></span>
+                    </div>
+                    <div class="card-entrega-right">
+                        <span class="m-entrega-itens">@(totalItens == 1 ? "1 item" : $"{totalItens} itens")</span>
+                        <span class="status-entrega-text">@EntregasModel.RotuloStatus(v.Status)</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL: PEDIDO MÍNIMO E TAXA DE ENTREGA     -->
+    <!-- ========================================== -->
+    <div class="modal fade" id="modalTaxa" tabindex="-1" aria-hidden="true">
+        <!-- mx-auto e max-width: 400px para deixar ele menor e centralizado no desktop -->
+        <div class="modal-dialog modal-dialog-centered mx-auto modal-dialog-bottom" style="max-width: 400px;">
+            <div class="modal-content modal-custom-content">
+
+                <div class="modal-header modal-header-custom d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title-custom mb-0">Pedido Mínimo e Taxa de Entrega</h5>
+                </div>
+
+                <div class="modal-body p-0 mt-3">
+                    <form id="formTaxa" method="post" asp-page-handler="Taxa">
+                        <!-- row-gap-custom dá o espaçamento vertical -->
+                        <div class="row row-gap-custom m-0">
+
+                            <!-- Pedido Mínimo (para entrega grátis) -->
+                            <div class="col-12 p-0">
+                                <label class="form-label-custom" for="inputPedidoMinimo">Pedido mínimo para entrega grátis</label>
+                                <input type="text" inputmode="decimal" class="form-control form-control-custom w-100" id="inputPedidoMinimo" name="pedidoMinimo" value="@minimoNoModal" placeholder="R$ 29,99" readonly="@(!Model.PodeAlterarTaxa)">
+                                <small class="text-muted d-block mt-1">Pedidos a partir deste valor não pagam a taxa. Deixe R$ 0,00 para cobrar sempre.</small>
+                            </div>
+
+                            <!-- Taxa de Entrega -->
+                            <div class="col-12 p-0 mt-3">
+                                <label class="form-label-custom" for="inputTaxaEntrega">Taxa de entrega (valor fixo)</label>
+                                <input type="text" inputmode="decimal" class="form-control form-control-custom w-100" id="inputTaxaEntrega" name="taxaEntrega" value="@taxaNoModal" placeholder="R$ 4,99" readonly="@(!Model.PodeAlterarTaxa)">
+                            </div>
+
+                            <!-- Mensagem de erro do salvamento (ou aviso de quem não pode alterar) -->
+                            <div class="col-12 p-0 mt-3">
+                                @if (Model.ErroTaxa is not null)
+                                {
+                                    <div id="mensagemTaxa" class="alert alert-danger mb-0 py-2 small" role="alert">@Model.ErroTaxa</div>
+                                }
+                                else if (!Model.PodeAlterarTaxa)
+                                {
+                                    <div class="alert alert-secondary mb-0 py-2 small" role="note">Somente administradores podem alterar estes valores.</div>
+                                }
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer modal-footer-custom mt-4 p-0">
+                    <button type="button" class="btn-cancelar-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <!-- form="formTaxa" liga o botão de salvar ao formulário, permitindo validações -->
+                    <button type="submit" form="formTaxa" class="btn-salvar-custom" id="btnSalvarTaxa" disabled="@(!Model.PodeAlterarTaxa)">Salvar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+@section Scripts {
+    <script>
+        // Valores em reais ficam no formato "R$ 4,99" ao sair do campo; o servidor aceita os dois formatos.
+        document.querySelectorAll('#inputPedidoMinimo, #inputTaxaEntrega').forEach(input => {
+            input.addEventListener('blur', () => {
+                let limpo = input.value.replace(/[R$\s]/g, '');
+                if (limpo.includes(',')) limpo = limpo.replace(/\./g, '').replace(',', '.');
+                const valor = Number(limpo);
+                if (limpo && Number.isFinite(valor) && valor >= 0) input.value = formatarMoeda(valor);
+            });
+        });
+        document.getElementById('formTaxa').addEventListener('submit', () => {
+            const botao = document.getElementById('btnSalvarTaxa');
+            botao.disabled = true;
+            botao.textContent = 'Salvando...';
+        });
+        @if (Model.ErroTaxa is not null)
+        {
+            @:bootstrap.Modal.getOrCreateInstance(document.getElementById('modalTaxa')).show();
+        }
+    </script>
+}

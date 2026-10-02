@@ -1,0 +1,11 @@
+@page
+@model NovaVendaModel
+@{
+    ViewData["Title"] = Model.Titulo;
+}
+
+<partial name="_Pdv" model="Model" />
+
+@section Scripts {
+    <script src="~/js/pdv.js" asp-append-version="true"></script>
+}

@@ -22,6 +22,13 @@ public class VendaRepository : Repository<Venda>, IVendaRepository
             .Include(v => v.Pagamento).Include(v => v.Entrega)
             .AsNoTracking().OrderByDescending(v => v.Data).ToListAsync();
 
+    public async Task<IEnumerable<Venda>> GetVendasDoClienteAsync(int clienteId)
+        => await _context.Vendas
+            .Include(v => v.ItensVenda).ThenInclude(i => i.Produto)
+            .Include(v => v.Pagamento).Include(v => v.Entrega)
+            .AsNoTracking().Where(v => v.ClienteId == clienteId)
+            .OrderByDescending(v => v.Data).ToListAsync();
+
     public async Task<IEnumerable<Venda>> GetVendasPorPeriodoAsync(DateTime inicio, DateTime fim)
         => await _context.Vendas
             .Include(v => v.Cliente).Include(v => v.ItensVenda).ThenInclude(i => i.Produto)

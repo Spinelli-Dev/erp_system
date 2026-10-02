@@ -9,13 +9,11 @@ namespace MaxiMassasAPI.Services;
 /// </summary>
 public interface IEmailService
 {
-    /// <summary>
-    /// Envia e-mail de redefinição de senha com o link contendo o token.
-    /// </summary>
-    /// <param name="destinatario">E-mail do usuário.</param>
-    /// <param name="nomeUsuario">Nome do usuário para personalização.</param>
-    /// <param name="token">Token seguro para inclusão no link.</param>
-    Task EnviarEmailResetSenhaAsync(string destinatario, string nomeUsuario, string token);
+    /// <summary>Painel: e-mail com o link para criar uma nova senha (válido por 1 hora).</summary>
+    Task EnviarLinkRedefinicaoAsync(string destinatario, string nome, string link);
+
+    /// <summary>App: e-mail com o código de 6 dígitos para criar uma nova senha (válido por 15 minutos).</summary>
+    Task EnviarCodigoRedefinicaoAsync(string destinatario, string nome, string codigo);
 
     /// <summary>Envia e-mail genérico.</summary>
     Task EnviarAsync(string destinatario, string assunto, string corpo);

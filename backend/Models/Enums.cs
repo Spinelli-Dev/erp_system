@@ -36,7 +36,9 @@ public enum TipoMovimentacao
     Entrada = 1,
     Saida = 2,
     ConsumoProprio = 3,
-    Perda = 4
+    Perda = 4,
+    /// <summary>Correção para uma quantidade exata (contagem de inventário); o motivo diz "de X para Y".</summary>
+    Ajuste = 5
 }
 
 public enum TipoProduto { Massa = 1, Molho = 2, Recheio = 3, Bebida = 4, Outros = 5 }

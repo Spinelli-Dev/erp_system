@@ -28,6 +28,8 @@ public class ProdutoService : IProdutoService
     public async Task<ProdutoResponse> CreateAsync(ProdutoRequest request)
     {
         var produto = _mapper.Map<Produto>(request);
+        produto.Sabor = string.IsNullOrWhiteSpace(request.Sabor) ? null : request.Sabor.Trim();
+        produto.Observacao = string.IsNullOrWhiteSpace(request.Observacao) ? null : request.Observacao.Trim();
         await _repo.AddAsync(produto);
         await _repo.SaveChangesAsync();
         return _mapper.Map<ProdutoResponse>(produto);
@@ -68,6 +70,8 @@ public class ProdutoService : IProdutoService
         }
 
         produto.Nome = request.Nome;
+        produto.Sabor = string.IsNullOrWhiteSpace(request.Sabor) ? null : request.Sabor.Trim();
+        produto.Observacao = string.IsNullOrWhiteSpace(request.Observacao) ? null : request.Observacao.Trim();
         produto.Peso = request.Peso;
         produto.PrecoVenda = request.PrecoVenda;
         produto.Custo = request.Custo;

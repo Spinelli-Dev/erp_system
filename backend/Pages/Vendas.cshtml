@@ -1,0 +1,263 @@
+@page
+@model VendasModel
+@{
+    // Herdado do antigo HTML estático; lista, filtros e Consumo próprio agora são do servidor (Vendas.cshtml.cs).
+    ViewData["Title"] = "Vendas";
+    var meses = new[] { "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" };
+}
+
+    <main class="conteudo-pagina flex-grow-1">
+
+        <header class="mb-4 position-relative">
+
+            <div class="d-flex align-items-center justify-content-between w-100">
+                <h2 class="titulo-pagina mb-0">Vendas</h2>
+
+                <!-- Total Mobile: Fica ancorado na direita -->
+                <div class="contador-vendas-mobile d-md-none" id="total-vendas-mobile">
+                    @PainelFormatos.Moeda(Model.Total)
+                </div>
+            </div>
+
+            <!-- Data alinhad a direita do título -->
+            <div class="d-none d-md-block position-absolute end-0 top-0">
+                <span id="data-atual" class="data-pagina"></span>
+            </div>
+
+        </header>
+
+        <!-- FILTROS SUPERIORES E CONTADOR DESKTOP/TABLET -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+            <!-- Grupo de Filtros (Esquerda) -->
+            <div class="container-filtros-vendas d-flex flex-wrap gap-2">
+                <select class="filtro-select" id="filtroMesVendas">
+                    <option value="">Mês</option>
+                    @for (var m = 0; m < 12; m++)
+                    {
+                        <option value="@((m + 1).ToString("00"))">@meses[m]</option>
+                    }
+                </select>
+
+                <select class="filtro-select" id="filtroAnoVendas">
+                    <option value="">Ano</option>
+                    @foreach (var ano in Model.Anos)
+                    {
+                        <option value="@ano">@ano</option>
+                    }
+                </select>
+
+                <select class="filtro-select" id="filtroProdutoVendas">
+                    <option value="">Produto</option>
+                    @foreach (var nome in Model.NomesProdutos)
+                    {
+                        <option value="@nome">@nome</option>
+                    }
+                </select>
+
+                <select class="filtro-select" id="filtroStatusVendas">
+                    <option value="">Status</option>
+                    <option value="Concluído">Concluído</option>
+                    <option value="Agendado">Agendado</option>
+                    <option value="Pendente">Pendente</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
+            </div>
+
+            <!-- Totalizador Desktop/Tablet (Direita) - Só aparece de MD para cima -->
+            <div class="contador-vendas-desktop d-none d-md-flex" id="total-vendas-desktop" title="Soma das vendas, sem as canceladas">
+                Total: @PainelFormatos.Moeda(Model.Total)
+            </div>
+
+        </div>
+
+        <!-- TOOLBAR: Busca e Botões -->
+        <div class="toolbar-produtos">
+            <div class="search-wrapper">
+                <img src="~/assets/icons/icone-pesquisar.svg" class="search-icon" alt="Lupa">
+                <input type="text" class="search-input" id="buscaVenda" placeholder="Busca por nome ou telefone...">
+            </div>
+
+            <div class="d-flex gap-2 btn-container-vendas">
+                @if (Model.PodeRegistrarConsumo)
+                {
+                    <button type="button" class="btn-secundario" data-bs-toggle="modal" data-bs-target="#modalConsumoProprio">
+                        CONSUMO PRÓPRIO
+                    </button>
+                }
+                <button type="button" class="btn-novo" onclick="window.location.href='/NovaVenda'">
+                    + NOVA VENDA
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO DESKTOP (TABELA) -->
+        <!-- ========================================== -->
+        <div class="table-responsive d-none d-lg-block mb-4 tabela-container">
+            <table class="tabela-produtos tabela-clientes w-100 tabela-custom">
+                <thead>
+                    <tr>
+                        <th class="respiro-esq">Pedido <span>↕</span></th>
+                        <th class="coluna-ordenavel">Nome <span>↕</span></th>
+                        <th>Telefone</th>
+                        <th class="coluna-ordenavel">Data <span>↕</span></th>
+                        <th>Hora</th>
+                        <th>Produtos</th>
+                        <th>Qtd</th>
+                        <th>Entrega</th>
+                        <th>Desconto</th>
+                        <th>Valor Pago</th>
+                        <th>Pagamento</th>
+                        <th>Plataforma</th>
+                        <th class="coluna-ordenavel">Status <span>↕</span></th>
+                        <th class="text-center">Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Vendas.Count == 0)
+                    {
+                        <tr><td colspan="14" class="text-center py-4">Nenhuma venda registrada</td></tr>
+                    }
+                    @foreach (var venda in Model.Vendas)
+                    {
+                        var telefone = Model.TelefonePorCliente.TryGetValue(venda.ClienteId, out var t) ? t : "—";
+                        var itens = venda.Itens.Count > 0 ? venda.Itens : new List<MaxiMassasAPI.DTOs.Response.ItemVendaResponse> { new() { NomeProduto = "—" } };
+                        @* Uma linha por item, como antes (o filtro por produto olha esta coluna) *@
+                        foreach (var item in itens)
+                        {
+                            <tr>
+                                <td class="respiro-esq"><div class="col-venda">@venda.Id</div></td>
+                                <td class="col-nome">@venda.NomeCliente</td>
+                                <td>@telefone</td>
+                                <td>@venda.Data.ToString("dd/MM/yyyy")</td>
+                                <td>@venda.Data.ToString("HH:mm")</td>
+                                <td>@item.NomeProduto</td>
+                                <td>@item.Quantidade</td>
+                                <td>@VendasModel.TextoEntrega(venda)</td>
+                                <td>@VendasModel.TextoDesconto(venda)</td>
+                                <td>@PainelFormatos.Moeda(venda.ValorTotal)</td>
+                                <td>@VendasModel.RotuloPagamento(venda.Pagamento?.FormaPagamento)</td>
+                                <td>@(string.IsNullOrEmpty(venda.Origem) ? "—" : venda.Origem)</td>
+                                <td class="status-venda-text">@VendasModel.RotuloStatus(venda.Status)</td>
+                                <td class="text-center"><a class="btn-icone d-inline-block" asp-page="/AlterarVenda" asp-route-id="@venda.Id" title="Editar venda #@venda.Id"><img src="~/assets/icons/icone-edicao.svg" alt="Editar"></a></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO MOBILE (CARDS AGRUPADOS POR VENDA) -->
+        <!-- ========================================== -->
+        <div class="d-flex flex-column gap-3 d-lg-none mb-4 container-cards-vendas">
+            @if (Model.Vendas.Count == 0)
+            {
+                <p class="text-center py-4">Nenhuma venda registrada</p>
+            }
+            @foreach (var venda in Model.Vendas)
+            {
+                var totalItens = venda.Itens.Sum(i => i.Quantidade);
+                <div class="card-venda">
+                    <div class="card-venda-row mb-1">
+                        <span class="m-venda-nome">@venda.NomeCliente</span>
+                        <a class="btn-icone p-0 m-0" asp-page="/AlterarVenda" asp-route-id="@venda.Id" title="Editar venda #@venda.Id"><img src="~/assets/icons/icone-edicao.svg" alt="Editar"></a>
+                    </div>
+                    <div class="card-venda-row mb-2">
+                        <span class="m-venda-tel">@venda.Data.ToString("dd/MM HH:mm") • #@venda.Id</span>
+                        <span class="m-venda-valor">@PainelFormatos.Moeda(venda.ValorTotal)</span>
+                    </div>
+                    <div class="card-venda-row">
+                        <span class="m-venda-itens">@(totalItens == 1 ? "1 item" : $"{totalItens} itens")</span>
+                        <span class="status-venda-text">@VendasModel.RotuloStatus(venda.Status)</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL: CONSUMO PRÓPRIO                     -->
+    <!-- ========================================== -->
+    <div class="modal fade" id="modalConsumoProprio" tabindex="-1" aria-hidden="true">
+        <!-- 600px de largura e o modal-dialog-bottom para seguir o padrão -->
+        <div class="modal-dialog modal-dialog-centered modal-dialog-bottom" style="max-width: 600px;">
+            <div class="modal-content modal-custom-content">
+
+                <div class="modal-header modal-header-custom d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title-custom mb-0">Consumo Próprio</h5>
+                </div>
+
+                <div class="modal-body p-0 mt-3">
+                    <form id="formConsumoProprio" method="post" asp-page-handler="Consumo">
+                        <!-- Produto escolhido na busca (preenchido pelo main.js) -->
+                        <input type="hidden" name="produtoId" id="inputConsumoProdutoId" value="0">
+                        @if (Model.ErroConsumo is not null)
+                        {
+                            <div class="alert alert-danger py-2 small" role="alert" id="erroConsumo">@Model.ErroConsumo</div>
+                        }
+                        <div class="row row-gap-custom m-0">
+
+                            <!-- Campo de Busca com Dropdown Flutuante -->
+                            <div class="col-12 p-0 position-relative">
+                                <p style="color: #6B7380; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; margin-bottom: 8px;">
+                                    Digite o nome do produto para registrar consumo próprio.
+                                </p>
+
+                                <div class="search-wrapper w-100">
+                                    <img src="~/assets/icons/icone-pesquisar.svg" class="search-icon" alt="Lupa">
+                                    <!-- autocomplete="off" evita que o navegador coloque o histórico nativo por cima -->
+                                    <input type="text" class="search-input w-100" id="buscaProdutoConsumo" placeholder="Digite o produto..." autocomplete="off">
+                                </div>
+                                <!-- Lista onde o JS vai injetar os resultados -->
+                                <ul class="autocomplete-lista d-none" id="dropdownConsumo"></ul>
+                            </div>
+
+                            <!-- Nome -->
+                            <div class="col-12 p-0 mt-3">
+                                <label class="form-label-custom">Nome</label>
+                                <!-- readonly: o usuário não edita, só preenche pela busca -->
+                                <input type="text" class="form-control form-control-custom w-100 bg-light" id="inputConsumoNome" placeholder="Selecione na busca acima" readonly>
+                            </div>
+
+                            <!-- Sabor e Peso (50/50) -->
+                            <div class="col-6 ps-0 pe-2 mt-3">
+                                <label class="form-label-custom">Sabor</label>
+                                <input type="text" class="form-control form-control-custom w-100 bg-light" id="inputConsumoSabor" placeholder="Automático" readonly>
+                            </div>
+                            <div class="col-6 pe-0 ps-2 mt-3">
+                                <label class="form-label-custom">Peso</label>
+                                <input type="text" class="form-control form-control-custom w-100 bg-light" id="inputConsumoPeso" placeholder="Automático" readonly>
+                            </div>
+
+                            <!-- Quantidade -->
+                            <div class="col-12 p-0 mt-3">
+                                <label class="form-label-custom" for="inputConsumoQtd">Quantidade *</label>
+                                <input type="number" min="1" class="form-control form-control-custom w-100" id="inputConsumoQtd" name="quantidade" placeholder="Ex: 1" required>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer modal-footer-custom mt-4 p-0">
+                    <button type="button" class="btn-cancelar-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formConsumoProprio" class="btn-salvar-custom" id="btnSalvarConsumo">Salvar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+@section Scripts {
+    <script>
+        // Catálogo para a busca do Consumo próprio — vindo do servidor, sem chamar a API.
+        window.CONSUMO_PRODUTOS = @Html.Raw(Model.ProdutosConsumoJson);
+        @if (Model.ErroConsumo is not null)
+        {
+            @:window.REABRIR_MODAL_CONSUMO = true;
+        }
+    </script>
+}

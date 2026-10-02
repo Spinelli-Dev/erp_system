@@ -1,0 +1,222 @@
+@page
+@model ProdutosModel
+@using MaxiMassasAPI.Models
+@{
+    // Herdado do antigo HTML estático; a lista e o modal agora são do servidor (Produtos.cshtml.cs).
+    ViewData["Title"] = "Produtos";
+}
+
+    <main class="conteudo-pagina flex-grow-1">
+        <!-- HEADER PADRÃO -->
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="titulo-pagina mb-0">Produtos</h2>
+            <!-- Data atualizada Tablet/Desktop: Aparece apenas para telas maiores -->
+            <span id="data-atual" class="data-pagina"></span>
+        </header>
+
+
+
+        <!-- TOOLBAR: Busca e Botão -->
+        <div class="toolbar-produtos">
+            <div class="search-wrapper">
+                <img src="~/assets/icons/icone-pesquisar.svg" class="search-icon" alt="Lupa">
+                <input type="text" class="search-input" placeholder="Buscar por nome do produto ou sabor...">
+            </div>
+
+            @if (Model.PodeEditar)
+            {
+                <button type="button" class="btn-novo" data-bs-toggle="modal" data-bs-target="#modalProduto">
+                    + NOVO
+                </button>
+            }
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VERSÃO  DESKTOP (TABELA) -->
+        <!-- ========================================== -->
+        <div class="table-responsive d-none d-lg-block mb-4 tabela-container">
+            <table class="tabela-produtos tabela-custom">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th id="th-produto" style="cursor:pointer; user-select: none;">Produto <span>↕</span></th>
+                        <th>Sabor</th>
+                        <th>Peso</th>
+                        <th>Tipo</th>
+                        <th>Custo</th>
+                        <th>Preço</th>
+                        <th>Obs</th>
+                        <th class="text-center">Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Produtos.Count == 0)
+                    {
+                        <tr><td colspan="9" class="text-center py-4">Nenhum produto cadastrado</td></tr>
+                    }
+                    @for (var i = 0; i < Model.Produtos.Count; i++)
+                    {
+                        var p = Model.Produtos[i];
+                        <tr>
+                            <td class="col-num">@(i + 1)</td>
+                            <td class="col-prod">@p.Nome</td>
+                            <td>@(string.IsNullOrEmpty(p.Sabor) ? "—" : p.Sabor)</td>
+                            <td>@PainelFormatos.Peso(p.Peso)</td>
+                            <td>@PainelFormatos.RotuloTipo(p.Tipo)</td>
+                            <td>@PainelFormatos.Moeda(p.Custo)</td>
+                            <td class="col-preco">@PainelFormatos.Moeda(p.PrecoVenda)</td>
+                            <td>@(string.IsNullOrEmpty(p.Observacao) ? "—" : p.Observacao)</td>
+                            <td class="text-center">
+                                @if (Model.PodeEditar)
+                                {
+                                    <button type="button" class="btn-icone btn-editar-produto" data-bs-toggle="modal" data-bs-target="#modalProduto" @Html.Raw(AtributosProduto(p))><img src="~/assets/icons/icone-edicao.svg" alt="Editar"></button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- VERSÃO MOBILE (CARDS) -->
+        <!-- ========================================== -->
+        <div class="d-flex flex-column gap-3 d-lg-none mb-4 container-cards-produtos">
+            @if (Model.Produtos.Count == 0)
+            {
+                <p class="text-center py-4">Nenhum produto cadastrado</p>
+            }
+            @foreach (var p in Model.Produtos)
+            {
+                <div class="card-produto">
+                    <div class="card-prod-left">
+                        <span class="m-prod">@p.Nome</span>
+                        <span class="m-sabor">@(string.IsNullOrEmpty(p.Sabor) ? "—" : p.Sabor)</span>
+                        <span class="m-peso-tipo">@PainelFormatos.Peso(p.Peso) • @PainelFormatos.RotuloTipo(p.Tipo)</span>
+                    </div>
+                    <div class="card-prod-right">
+                        @if (Model.PodeEditar)
+                        {
+                            <button type="button" class="btn-icone mb-1 btn-editar-produto" data-bs-toggle="modal" data-bs-target="#modalProduto" @Html.Raw(AtributosProduto(p))>
+                                <img src="~/assets/icons/icone-edicao.svg" alt="Editar">
+                            </button>
+                        }
+                        <span class="m-sabor">Custo: @PainelFormatos.Moeda(p.Custo)</span>
+                        <span class="m-preco">@PainelFormatos.Moeda(p.PrecoVenda)</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </main>
+
+    <!-- Modal de Produto (Unificado) -->
+    <div class="modal fade" id="modalProduto" tabindex="-1" aria-hidden="true">
+        <!-- A classe modal-dialog-bottom ativa o comportamento de surgir do chão no mobile -->
+        <!-- max-width: 600px no style para garantir um limite no Desktop -->
+        <div class="modal-dialog modal-dialog-centered modal-dialog-bottom" style="max-width: 600px;">
+            <div class="modal-content modal-custom-content">
+
+                <div class="modal-header modal-header-custom d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title-custom mb-0" id="tituloModalProduto">Cadastrar Produto</h5>
+                </div>
+
+                <div class="modal-body p-0">
+                    <form id="formProduto" method="post">
+                        <input type="hidden" name="Produto.Id" id="inputId" value="@Model.Produto.Id">
+                        @if (Model.ErrosFormulario.Count > 0)
+                        {
+                            <div class="alert alert-danger py-2 small" role="alert" id="errosProduto">
+                                @foreach (var erro in Model.ErrosFormulario) { <div>@erro</div> }
+                            </div>
+                        }
+                        <!-- row-gap-custom dá o espaçamento vertical -->
+                        <div class="row row-gap-custom m-0">
+
+                            <!-- 1ª Linha: Nome -->
+                            <div class="col-12 p-0">
+                                <label class="form-label-custom" for="inputNome">Nome *</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputNome" name="Produto.Nome" value="@Model.Produto.Nome" placeholder="Ex: Canelone" maxlength="150" required>
+                            </div>
+
+                            <!-- 2ª Linha: Sabor -->
+                            <div class="col-12 p-0">
+                                <label class="form-label-custom" for="inputSabor">Sabor</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputSabor" name="Produto.Sabor" value="@Model.Produto.Sabor" placeholder="Ex: Brócolis" maxlength="100">
+                            </div>
+
+                            <!-- 3ª Linha: Peso e Custo (50/50 sempre) -->
+                            <div class="col-6 ps-0 pe-2">
+                                <label class="form-label-custom" for="inputPeso">Peso *</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputPeso" name="Produto.Peso" value="@Model.Produto.Peso" placeholder="Ex: 250g" required>
+                            </div>
+                            <div class="col-6 pe-0 ps-2">
+                                <label class="form-label-custom" for="inputCusto">Custo *</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputCusto" name="Produto.Custo" value="@Model.Produto.Custo" placeholder="Ex: R$ 18,90" inputmode="decimal" required>
+                            </div>
+
+                            <!-- 4ª e 5ª Linhas: Preço, Estoque, Tipo -->
+                            <!-- No PC: os três ficam na mesma linha (col-md-4). No Mobile: Preço e Estoque dividem (col-6), e o Tipo ocupa tudo (col-12) na linha abaixo -->
+                            <div class="col-6 col-md-4 ps-0 pe-2">
+                                <label class="form-label-custom" for="inputPreco">Preço *</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputPreco" name="Produto.Preco" value="@Model.Produto.Preco" placeholder="Ex: R$ 39,90" inputmode="decimal" required>
+                            </div>
+                            <div class="col-6 col-md-4 px-md-2 pe-0 ps-2">
+                                <label class="form-label-custom" for="inputEstoque">Estoque *</label>
+                                <!-- Na alteração fica só para leitura: estoque muda na tela de Estoque (com motivo). -->
+                                <input type="number" min="0" class="form-control form-control-custom w-100" id="inputEstoque" name="Produto.Estoque" value="@Model.Produto.Estoque" placeholder="Ex: 10" required>
+                            </div>
+                            <div class="col-12 col-md-4 px-0 ps-md-2 mt-3 mt-md-0">
+                                <label class="form-label-custom" for="inputTipo">Tipo *</label>
+                                <!-- form-select adiciona a setinha padrão automaticamente -->
+                                <select class="form-control form-control-custom w-100 form-select" id="inputTipo" name="Produto.Tipo" required>
+                                    <option value="" disabled selected="@string.IsNullOrEmpty(Model.Produto.Tipo)">Massas, Molhos...</option>
+                                    @foreach (var tipo in PainelFormatos.Tipos)
+                                    {
+                                        <option value="@tipo.Key" selected="@(Model.Produto.Tipo == tipo.Key.ToString())">@tipo.Value</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <!-- 6ª Linha: Observações -->
+                            <div class="col-12 p-0 mt-3 mt-md-0">
+                                <label class="form-label-custom" for="inputObs">Observações</label>
+                                <input type="text" class="form-control form-control-custom w-100" id="inputObs" name="Produto.Observacao" value="@Model.Produto.Observacao" placeholder="Ex: Produto vegano" maxlength="500">
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer modal-footer-custom">
+                    <button type="button" class="btn-cancelar-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="formProduto" class="btn-salvar-custom" id="btnSalvarProduto">Salvar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+@functions {
+    /// <summary>Dados do produto no botão de editar: o modal é preenchido a partir deles (com o Id).</summary>
+    static string AtributosProduto(MaxiMassasAPI.DTOs.Response.ProdutoResponse p)
+    {
+        string A(string nome, string? valor) => $"data-{nome}=\"{System.Net.WebUtility.HtmlEncode(valor ?? "")}\"";
+        return string.Join(" ", A("id", p.Id.ToString()), A("nome", p.Nome), A("sabor", p.Sabor),
+            A("peso", PainelFormatos.Peso(p.Peso)), A("custo", PainelFormatos.Moeda(p.Custo)),
+            A("preco", PainelFormatos.Moeda(p.PrecoVenda)), A("estoque", (p.Estoque?.Quantidade ?? 0).ToString()),
+            A("tipo", p.Tipo.ToString()), A("obs", p.Observacao));
+    }
+}
+
+@section Scripts {
+    @if (Model.ErrosFormulario.Count > 0)
+    {
+        <script>window.REABRIR_MODAL_PRODUTO = true;</script>
+    }
+}

@@ -1,0 +1,66 @@
+@page
+@model EvolucaoModel
+@{
+    // Herdado do antigo HTML estático; os dados dos gráficos agora vêm do servidor (Evolucao.cshtml.cs).
+    ViewData["Title"] = "Evolução";
+}
+
+    <main class="conteudo-pagina flex-grow-1">
+    <!-- HEADER PADRÃO -->
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="titulo-pagina mb-0">Evolução</h2>
+           
+            <!-- Data atualizada Tablet/Desktop: Aparece apenas para telas maiores -->
+            <span class="data-pagina d-none d-md-block" id="data-atual"></span>
+        </header>
+
+    @if (!Model.VeFinanceiro)
+    {
+        <div class="alert alert-secondary py-2" role="note">Os gráficos de faturamento e lucro estão disponíveis para administradores.</div>
+    }
+
+    <!-- Filtros de Botão -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <button type="button" class="btn-filtro-evo">Dia do Mês</button>
+        <button type="button" class="btn-filtro-evo">Semana</button>
+        <button type="button" class="btn-filtro-evo active">Mês</button>
+        <button type="button" class="btn-filtro-evo">Ano</button>
+    </div>
+
+    <!-- Card 1: Faturamento e Lucro -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm p-2 p-md-4">
+                <div class="mb-1">
+                    <h5 class="titulo-card-evo m-0">Faturamento e Lucro</h5>
+                    <p class="subtitulo-card-evo m-0">Receita bruta (linha) e lucro líquido (barras)</p>
+                </div>
+                <div style="position: relative; height: 350px; width: 100%;">
+                    <canvas id="chartFaturamento"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Produtos Mais Vendidos -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm p-2 p-md-4">
+                <div class="mb-1">
+                    <h5 class="titulo-card-evo m-0">Produtos Mais Vendidos</h5>
+                    <p class="subtitulo-card-evo m-0">Quantidade mais vendidos (barras) e faturamento mais vendidos (linha)</p>
+                </div>
+                <div style="position: relative; height: 400px; width: 100%;">
+                    <canvas id="chartProdutos"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script>window.EVOLUCAO_DADOS = @Html.Raw(Model.DadosJson);</script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@@2.0.0"></script>
+    <script src="~/js/evolucao.js" asp-append-version="true"></script>
+}

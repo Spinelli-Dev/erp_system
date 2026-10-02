@@ -8,7 +8,6 @@ using MaxiMassasAPI.Integrations;
 using MaxiMassasAPI.Middleware;
 using MaxiMassasAPI.Repositories;
 using MaxiMassasAPI.Services;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,11 +19,9 @@ builder.Services.AddDbContext<AppDbContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ============================================================================
-// 2. AUTENTICAÇÃO — Basic Auth com handler customizado
+// 2. AUTENTICAÇÃO — Basic Auth (API), cookie (painel Razor) e ClienteAuth (app)
 // ============================================================================
-builder.Services.AddAuthentication("BasicAuth")
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthHandler>("BasicAuth", null);
-builder.Services.AddAuthorization();
+builder.Services.AddPainelAuth();
 
 // ============================================================================
 // 3. AUTOMAPPER — mapeamento de entidades ↔ DTOs
@@ -62,6 +59,7 @@ builder.Services.AddScoped<IConsumoProprioRepository, ConsumoProprioRepository>(
 // 7. SERVICES DE NEGÓCIO
 // ============================================================================
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddSingleton<IFotoPerfilService, FotoPerfilService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
 builder.Services.AddScoped<IEstoqueService, EstoqueService>();
@@ -82,6 +80,10 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // US16 — Service de E-mail (mockável via appsettings.json EmailSettings:MockMode)
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+// App do cliente (Flutter) — cadastro, cardápio e pedidos
+builder.Services.AddScoped<IAppClienteService, AppClienteService>();
+builder.Services.AddScoped<IConfiguracaoEntregaService, ConfiguracaoEntregaService>();
+
 // ============================================================================
 // 8. RNF03 — BACKUP AUTOMÁTICO (BackgroundService)
 // Roda como hosted service em background, sem bloquear as requisições da API.
@@ -96,6 +98,20 @@ builder.Services.AddControllers()
         new System.Text.Json.Serialization.JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfiguration();
+
+// ============================================================================
+// 9.1 PAINEL WEB (Razor Pages) — todas as páginas exigem login, menos a de login
+// ============================================================================
+builder.Services.AddRazorPages(o =>
+{
+    o.Conventions.AuthorizeFolder("/", PainelAuth.Policy);
+    o.Conventions.AllowAnonymousToPage("/Login");
+    o.Conventions.AllowAnonymousToPage("/EsqueciSenha");
+    o.Conventions.AllowAnonymousToPage("/RedefinirSenha");
+});
+// Acentos saem como texto ("Evolução"), não como entidades ("Evolu&#xE7;&#xE3;o").
+builder.Services.Configure<Microsoft.Extensions.WebEncoders.WebEncoderOptions>(o =>
+    o.TextEncoderSettings = new System.Text.Encodings.Web.TextEncoderSettings(System.Text.Unicode.UnicodeRanges.All));
 
 // ============================================================================
 // 10. CORS — liberado para todos (ajustar origins em produção)
@@ -131,8 +147,10 @@ app.UseSwaggerUI(c => {
 });
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(); // wwwroot: CSS, JS, imagens e ícones do painel
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapRazorPages();
 app.Run();

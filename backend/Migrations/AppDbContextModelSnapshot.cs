@@ -53,6 +53,10 @@ namespace MaxiMassasAPI.Migrations
                         .HasMaxLength(14)
                         .HasColumnType("nvarchar(14)");
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
                     b.Property<string>("Estado")
                         .IsRequired()
                         .HasMaxLength(2)
@@ -77,6 +81,10 @@ namespace MaxiMassasAPI.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("SenhaHash")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.Property<string>("Telefone")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -88,7 +96,39 @@ namespace MaxiMassasAPI.Migrations
                         .IsUnique()
                         .HasFilter("[Cpf] IS NOT NULL");
 
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
                     b.ToTable("Clientes");
+                });
+
+            modelBuilder.Entity("MaxiMassasAPI.Models.ConfiguracaoEntrega", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AtualizadoEm")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("PedidoMinimoEntregaGratis")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("TaxaEntrega")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConfiguracoesEntrega");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AtualizadoEm = new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PedidoMinimoEntregaGratis = 0m,
+                            TaxaEntrega = 0m
+                        });
                 });
 
             modelBuilder.Entity("MaxiMassasAPI.Models.ConsumoProprio", b =>
@@ -124,6 +164,60 @@ namespace MaxiMassasAPI.Migrations
                     b.ToTable("ConsumosProprios");
                 });
 
+            modelBuilder.Entity("MaxiMassasAPI.Models.EnderecoCliente", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Bairro")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Cep")
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<string>("Cidade")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("ClienteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Complemento")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<string>("Logradouro")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Numero")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("Principal")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClienteId");
+
+                    b.ToTable("EnderecosCliente");
+                });
+
             modelBuilder.Entity("MaxiMassasAPI.Models.Entrega", b =>
                 {
                     b.Property<int>("Id")
@@ -132,13 +226,41 @@ namespace MaxiMassasAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Bairro")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Cep")
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<string>("Cidade")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Complemento")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<DateTime>("DataEntrega")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Estado")
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
                     b.Property<string>("Horario")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Logradouro")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Numero")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal>("Taxa")
                         .ValueGeneratedOnAdd()
@@ -337,6 +459,11 @@ namespace MaxiMassasAPI.Migrations
                     b.Property<DateTime>("CriadoEm")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Destino")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -344,6 +471,12 @@ namespace MaxiMassasAPI.Migrations
 
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("ReferenciaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Tentativas")
+                        .HasColumnType("int");
 
                     b.Property<string>("Token")
                         .IsRequired()
@@ -356,6 +489,8 @@ namespace MaxiMassasAPI.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Token");
+
+                    b.HasIndex("Destino", "ReferenciaId");
 
                     b.ToTable("PasswordResetTokens");
                 });
@@ -376,11 +511,19 @@ namespace MaxiMassasAPI.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<string>("Observacao")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<decimal>("Peso")
                         .HasColumnType("decimal(10,3)");
 
                     b.Property<decimal>("PrecoVenda")
                         .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Sabor")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Tipo")
                         .HasColumnType("int");
@@ -398,6 +541,21 @@ namespace MaxiMassasAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Ativo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<byte[]>("Foto")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<DateTime?>("FotoAtualizadaEm")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -413,10 +571,18 @@ namespace MaxiMassasAPI.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("Telefone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<int>("Tipo")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.HasIndex("Login")
                         .IsUnique();
@@ -495,7 +661,7 @@ namespace MaxiMassasAPI.Migrations
                     b.Property<int>("TipoDesconto")
                         .HasColumnType("int");
 
-                    b.Property<int>("UsuarioId")
+                    b.Property<int?>("UsuarioId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("ValorTotal")
@@ -527,6 +693,17 @@ namespace MaxiMassasAPI.Migrations
                     b.Navigation("Produto");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("MaxiMassasAPI.Models.EnderecoCliente", b =>
+                {
+                    b.HasOne("MaxiMassasAPI.Models.Cliente", "Cliente")
+                        .WithMany("Enderecos")
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
                 });
 
             modelBuilder.Entity("MaxiMassasAPI.Models.Entrega", b =>
@@ -624,8 +801,7 @@ namespace MaxiMassasAPI.Migrations
                     b.HasOne("MaxiMassasAPI.Models.Usuario", "Usuario")
                         .WithMany("Vendas")
                         .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Cliente");
 
@@ -634,6 +810,8 @@ namespace MaxiMassasAPI.Migrations
 
             modelBuilder.Entity("MaxiMassasAPI.Models.Cliente", b =>
                 {
+                    b.Navigation("Enderecos");
+
                     b.Navigation("Vendas");
                 });
 

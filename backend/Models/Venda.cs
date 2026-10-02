@@ -34,8 +34,9 @@ public class Venda
     public int ClienteId { get; set; }
     public Cliente Cliente { get; set; } = null!;
 
-    public int UsuarioId { get; set; }
-    public Usuario Usuario { get; set; } = null!;
+    // Operador que registrou a venda. Nulo nos pedidos feitos pelo próprio cliente no app.
+    public int? UsuarioId { get; set; }
+    public Usuario? Usuario { get; set; }
 
     public Pagamento? Pagamento { get; set; }
     public Entrega? Entrega { get; set; }

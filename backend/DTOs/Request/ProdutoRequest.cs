@@ -5,19 +5,17 @@ using MaxiMassasAPI.Models;
 public class ProdutoRequest
 {
     public string Nome { get; set; } = string.Empty;
+    public string? Sabor { get; set; }
+    public string? Observacao { get; set; }
     public decimal Peso { get; set; }
     public decimal PrecoVenda { get; set; }
     public decimal Custo { get; set; }
     public TipoProduto Tipo { get; set; }
 }
 
-public class ProdutoUpdateRequest
+/// <summary>Mesmos campos (e mesmas validações) do cadastro, mais o motivo da mudança de preço.</summary>
+public class ProdutoUpdateRequest : ProdutoRequest
 {
-    public string Nome { get; set; } = string.Empty;
-    public decimal Peso { get; set; }
-    public decimal PrecoVenda { get; set; }
-    public decimal Custo { get; set; }
-    public TipoProduto Tipo { get; set; }
     /// <summary>
     /// Motivo da alteração de preço — registrado no HistoricoPreco (UML: MotivoAlteracao).
     /// Obrigatório quando PrecoVenda é diferente do atual.

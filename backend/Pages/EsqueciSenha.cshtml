@@ -1,0 +1,42 @@
+@page
+@model EsqueciSenhaModel
+@{
+    Layout = "_LayoutAcesso";
+    ViewData["Title"] = "Esqueci minha senha";
+}
+<h3 class="titulo-login text-start">Esqueci minha senha</h3>
+
+@if (Model.Enviado)
+{
+    <p class="subtitulo-login text-start mb-3">Pedido recebido.</p>
+    <div class="alert alert-success py-2 mb-3" role="status" style="font-size: 0.875rem; border-radius: 8px;">
+        Se houver um usuário ativo com e-mail cadastrado, enviamos um link para criar uma nova senha.
+        O link vale por <strong>1 hora</strong>. Confira também a caixa de spam.
+    </div>
+    <p class="text-start" style="font-size: 0.8125rem; color: #6B7280;">
+        Não recebeu? Se o seu usuário não tem e-mail cadastrado, peça ao administrador do sistema para redefinir sua senha
+        na tela <strong>Usuários</strong>.
+    </p>
+    <a asp-page="/Login" class="btn-login w-100 mt-4 text-decoration-none">VOLTAR PARA O LOGIN</a>
+}
+else
+{
+    <p class="subtitulo-login text-start">Informe seu e-mail ou usuário. Enviaremos um link para você criar uma nova senha.</p>
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="emailOuLogin" class="label-login">E-mail ou usuário</label>
+            <input type="text" class="input-login w-100" id="emailOuLogin" name="EmailOuLogin" value="@Model.EmailOuLogin"
+                   placeholder="voce@empresa.com.br" autocomplete="username" autocapitalize="none" required autofocus maxlength="150">
+        </div>
+
+        @if (Model.Erro is not null)
+        {
+            <div class="alert alert-danger py-2 text-center mt-3 mb-0" role="alert" style="font-size: 0.875rem; border-radius: 8px;">@Model.Erro</div>
+        }
+
+        <button type="submit" class="btn-login w-100 mt-4">ENVIAR LINK</button>
+    </form>
+
+    <a asp-page="/Login" class="link-senha text-center mt-3">Voltar para o login</a>
+}

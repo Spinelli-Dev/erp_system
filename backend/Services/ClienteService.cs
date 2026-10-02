@@ -49,26 +49,7 @@ public class ClienteService : IClienteService
         // Remove mascara do CEP
         cliente.CEP = Regex.Replace(request.CEP, @"\D", "");
 
-        // Busca endereco automaticamente pelo ViaCEP
-        var endereco = await _viacep.BuscarEnderecoPorCepAsync(cliente.CEP);
-
-        if (endereco is not null)
-        {
-            cliente.Logradouro = endereco.Logradouro;
-            cliente.Bairro = endereco.Bairro;
-            cliente.Cidade = endereco.Localidade;
-            cliente.Estado = endereco.UF;
-
-            _logger.LogInformation(
-                "Endereco preenchido via ViaCEP para o CEP {CEP}.",
-                cliente.CEP);
-        }
-        else
-        {
-            _logger.LogWarning(
-                "ViaCEP nao retornou endereco para o CEP {CEP}.",
-                cliente.CEP);
-        }
+        await PreencherEnderecoAsync(cliente, request, consultarCep: true);
 
         await _repo.AddAsync(cliente);
         await _repo.SaveChangesAsync();
@@ -93,31 +74,48 @@ public class ClienteService : IClienteService
 
         cliente.Observacao = request.Observacao;
 
+        if (request.Cpf is not null)
+            cliente.Cpf = request.Cpf;
+
         var novoCep = Regex.Replace(request.CEP, @"\D", "");
+        var cepMudou = cliente.CEP != novoCep;
+        cliente.CEP = novoCep;
 
-        // Atualiza endereco caso o CEP tenha sido alterado
-        if (cliente.CEP != novoCep)
-        {
-            var endereco = await _viacep.BuscarEnderecoPorCepAsync(novoCep);
-
-            if (endereco is not null)
-            {
-                cliente.CEP = novoCep;
-                cliente.Logradouro = endereco.Logradouro;
-                cliente.Bairro = endereco.Bairro;
-                cliente.Cidade = endereco.Localidade;
-                cliente.Estado = endereco.UF;
-
-                _logger.LogInformation(
-                    "Endereco atualizado automaticamente via ViaCEP.");
-            }
-        }
+        // CEP novo: busca o endereço dele (o que foi digitado continua valendo)
+        await PreencherEnderecoAsync(cliente, request, consultarCep: cepMudou);
 
         _repo.Update(cliente);
 
         await _repo.SaveChangesAsync();
 
         return _mapper.Map<ClienteResponse>(cliente);
+    }
+
+    /// <summary>
+    /// Rua, bairro, cidade e UF: vale o que foi digitado; o que vier vazio sai do ViaCEP
+    /// (quando [consultarCep]) ou fica como estava. Se o ViaCEP não achar o CEP, o
+    /// endereço digitado é gravado do mesmo jeito (antes o endereço ficava em branco).
+    /// </summary>
+    private async Task PreencherEnderecoAsync(Cliente cliente, ClienteRequest request, bool consultarCep)
+    {
+        static string? Texto(string? s) => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+
+        var faltaAlgo = Texto(request.Logradouro) is null || Texto(request.Bairro) is null
+                        || Texto(request.Cidade) is null || Texto(request.Estado) is null;
+        var viaCep = consultarCep && faltaAlgo ? await _viacep.BuscarEnderecoPorCepAsync(cliente.CEP) : null;
+
+        if (consultarCep && faltaAlgo)
+        {
+            if (viaCep is not null)
+                _logger.LogInformation("Endereco completado via ViaCEP para o CEP {CEP}.", cliente.CEP);
+            else
+                _logger.LogWarning("ViaCEP nao retornou endereco para o CEP {CEP}.", cliente.CEP);
+        }
+
+        cliente.Logradouro = Texto(request.Logradouro) ?? Texto(viaCep?.Logradouro) ?? Texto(cliente.Logradouro) ?? string.Empty;
+        cliente.Bairro = Texto(request.Bairro) ?? Texto(viaCep?.Bairro) ?? Texto(cliente.Bairro) ?? string.Empty;
+        cliente.Cidade = Texto(request.Cidade) ?? Texto(viaCep?.Localidade) ?? Texto(cliente.Cidade) ?? string.Empty;
+        cliente.Estado = (Texto(request.Estado) ?? Texto(viaCep?.UF) ?? Texto(cliente.Estado) ?? string.Empty).ToUpper();
     }
 
     public async Task<bool> DeleteAsync(int id)

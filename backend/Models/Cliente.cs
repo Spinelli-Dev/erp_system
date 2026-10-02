@@ -33,6 +33,18 @@ public class Cliente
 
     public string? Observacao { get; set; }
 
+    // ── Acesso pelo app do cliente ───────────────────────────────────────────
+    // Ambos nulos para clientes cadastrados no balcão, que não usam o app.
+
+    /// <summary>E-mail de login no app (único quando preenchido).</summary>
+    public string? Email { get; set; }
+
+    /// <summary>Senha do app hasheada com BCrypt. Nunca retornar nos responses.</summary>
+    public string? SenhaHash { get; set; }
+
+    /// <summary>Endereços salvos no app (o principal vem pré-preenchido no pedido).</summary>
+    public ICollection<EnderecoCliente> Enderecos { get; set; } = new List<EnderecoCliente>();
+
     public ICollection<Venda> Vendas { get; set; } = new List<Venda>();
 
     // ── Métodos do diagrama UML (regras de negócio computadas) ───────────────

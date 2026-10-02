@@ -39,5 +39,16 @@ public class ClienteRequestValidator : AbstractValidator<ClienteRequest>
 
         RuleFor(c => c.Complemento).MaximumLength(100);
         RuleFor(c => c.Observacao).MaximumLength(500);
+        RuleFor(c => c.Logradouro).MaximumLength(200);
+        RuleFor(c => c.Bairro).MaximumLength(100);
+        RuleFor(c => c.Cidade).MaximumLength(100);
+        RuleFor(c => c.Estado).Matches("^[A-Za-z]{2}$").WithMessage("UF deve ter 2 letras (ex.: SP).")
+            .When(c => !string.IsNullOrWhiteSpace(c.Estado));
     }
+}
+
+/// <summary>O PUT valida igual ao cadastro (antes não validava nada).</summary>
+public class ClienteUpdateRequestValidator : AbstractValidator<ClienteUpdateRequest>
+{
+    public ClienteUpdateRequestValidator() => Include(new ClienteRequestValidator());
 }

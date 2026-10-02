@@ -1,0 +1,50 @@
+@page
+@model RedefinirSenhaModel
+@using MaxiMassasAPI.Services
+@{
+    Layout = "_LayoutAcesso";
+    ViewData["Title"] = "Criar nova senha";
+}
+<h3 class="titulo-login text-start">Criar nova senha</h3>
+
+@if (!Model.LinkValido)
+{
+    <p class="subtitulo-login text-start mb-3">Não foi possível usar este link.</p>
+    <div class="alert alert-warning py-2 mb-3" role="alert" style="font-size: 0.875rem; border-radius: 8px;">
+        Este link expirou ou já foi usado. Os links valem por 1 hora e só funcionam uma vez.
+    </div>
+    <a asp-page="/EsqueciSenha" class="btn-login w-100 mt-4 text-decoration-none">PEDIR UM NOVO LINK</a>
+    <a asp-page="/Login" class="link-senha text-center mt-3">Voltar para o login</a>
+}
+else
+{
+    <p class="subtitulo-login text-start">A nova senha deve ter @PoliticaSenha.Descricao.</p>
+
+    <form method="post" autocomplete="off">
+        <input type="hidden" name="Token" value="@Model.Token">
+
+        <div class="mb-3">
+            <label for="senha" class="label-login">Nova senha</label>
+            <div class="position-relative">
+                <input type="password" class="input-login w-100" id="senha" name="NovaSenha"
+                       placeholder="••••••••" autocomplete="new-password" minlength="@PoliticaSenha.TamanhoMinimo" required autofocus>
+                <button type="button" class="btn-mostrar-senha" onclick="alternarSenha()">
+                    <img src="~/assets/icons/icone-ver.svg" id="icone-senha" alt="Ver senha">
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-2">
+            <label for="confirmar" class="label-login">Confirmar nova senha</label>
+            <input type="password" class="input-login w-100" id="confirmar" name="ConfirmarSenha"
+                   placeholder="••••••••" autocomplete="new-password" required>
+        </div>
+
+        @if (Model.Erro is not null)
+        {
+            <div class="alert alert-danger py-2 text-center mt-3 mb-0" role="alert" style="font-size: 0.875rem; border-radius: 8px;">@Model.Erro</div>
+        }
+
+        <button type="submit" class="btn-login w-100 mt-4">SALVAR NOVA SENHA</button>
+    </form>
+}

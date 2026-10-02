@@ -4,7 +4,6 @@ using MaxiMassasAPI.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 
@@ -40,19 +39,11 @@ public class BasicAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
             var senha = creds[(sep + 1)..];
 
             var usuario = await _usuarioRepository.GetByLoginAsync(login);
-            if (usuario is null || !BCrypt.Net.BCrypt.Verify(senha, usuario.Senha))
+            // Desativado não entra (continua no banco só por causa do histórico).
+            if (usuario is null || !usuario.Ativo || !BCrypt.Net.BCrypt.Verify(senha, usuario.Senha))
                 return AuthenticateResult.Fail("Login ou senha invalidos.");
 
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-                new Claim(ClaimTypes.Name, usuario.Login),
-                new Claim(ClaimTypes.GivenName, usuario.Nome),
-                new Claim(ClaimTypes.Role, usuario.Tipo.ToString())
-            };
-
-            var identity = new ClaimsIdentity(claims, Scheme.Name);
-            var principal = new ClaimsPrincipal(identity);
+            var principal = PainelAuth.CriarPrincipal(usuario, Scheme.Name);
             return AuthenticateResult.Success(new AuthenticationTicket(principal, Scheme.Name));
         }
         catch (Exception ex)

@@ -37,51 +37,30 @@ public class AuthController : ControllerBase
     }
 
     // -------------------------------------------------------------------------
-    // POST /api/auth/forgot-password
-    // US16 — Passo 1: Solicitar redefinição de senha
-    // Usuário informa o e-mail (= Login no sistema) e recebe um link por e-mail.
-    // SEGURANÇA: sempre retorna 200 para não revelar se o e-mail existe no sistema.
+    // US16 — Esqueci minha senha (painel). As páginas Razor EsqueciSenha/RedefinirSenha usam o mesmo
+    // IAuthService; estes endpoints existem para integrações. Regras completas em AuthService.
+    // SEGURANÇA: o passo 1 sempre responde igual, exista ou não a conta.
     // -------------------------------------------------------------------------
-    /// <summary>
-    /// Solicita redefinição de senha. Envia link com token para o e-mail informado.
-    /// O token expira em 1 hora e pode ser usado apenas uma vez.
-    /// </summary>
+    /// <summary>Envia o link de redefinição (válido por 1 hora, uso único) para o e-mail do usuário. Aceita e-mail ou login.</summary>
     [HttpPost("forgot-password")]
     [AllowAnonymous]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Email))
-            return BadRequest(ApiResponse.Fail("O e-mail é obrigatório."));
+            return BadRequest(ApiResponse.Fail("Informe o e-mail ou o login."));
 
-        // Sempre retorna 200 — não vaza informação sobre existência do e-mail
-        await _authService.SolicitarResetSenhaAsync(request.Email.Trim().ToLower());
-
+        await _authService.SolicitarResetSenhaAsync(request.Email);
         return Ok(ApiResponse.Ok(
-            "Se o e-mail estiver cadastrado, você receberá as instruções de redefinição em breve."));
+            "Se houver um usuário ativo com e-mail cadastrado, enviamos um link para criar uma nova senha."));
     }
 
-    // -------------------------------------------------------------------------
-    // POST /api/auth/reset-password
-    // US16 — Passo 2: Redefinir senha com o token recebido por e-mail
-    // Token deve ser válido (não expirado e não utilizado anteriormente).
-    // -------------------------------------------------------------------------
-    /// <summary>
-    /// Redefine a senha usando o token recebido por e-mail.
-    /// O token é invalidado após o uso (uso único).
-    /// </summary>
+    /// <summary>Cria a nova senha com o token do link. O token é invalidado após o uso.</summary>
     [HttpPost("reset-password")]
     [AllowAnonymous]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Token))
-            return BadRequest(ApiResponse.Fail("O token é obrigatório."));
-
-        if (string.IsNullOrWhiteSpace(request.NovaSenha))
-            return BadRequest(ApiResponse.Fail("A nova senha é obrigatória."));
-
-        // InvalidOperationException carrega mensagem de negócio para o usuário
-        var sucesso = await _authService.RedefinirSenhaAsync(request);
-
-        return Ok(ApiResponse.Ok("Senha redefinida com sucesso. Você já pode fazer login com a nova senha."));
+        // InvalidOperationException (link expirado, senha fraca...) vira 400 no ErrorHandlingMiddleware
+        await _authService.RedefinirSenhaAsync(request);
+        return Ok(ApiResponse.Ok("Senha redefinida com sucesso. Você já pode entrar com a nova senha."));
     }
 }

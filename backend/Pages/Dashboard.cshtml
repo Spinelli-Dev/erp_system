@@ -1,0 +1,301 @@
+@page
+@model DashboardModel
+@{
+    // Herdado do antigo HTML estático; os números agora são montados no servidor (Dashboard.cshtml.cs).
+    ViewData["Title"] = "Dashboard";
+    var meses = new[] { "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" };
+    var h = Model.Hoje;
+    var p = Model.Periodo;
+}
+
+    <main class="conteudo-pagina">
+
+        <!-- HEADER PADRÃO -->
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="titulo-pagina mb-0">Dashboard</h2>
+            <!-- Data atualizada Tablet/Desktop: Aparece apenas para telas maiores -->
+            <span id="data-atual" class="data-pagina"></span>
+        </header>
+
+        <!-- g-3 é o espaçamento entre os cards -->
+        <div class="row g-3">
+
+            <p class="subtitulo-hoje">Hoje</p>
+
+            <!-- 1º CONJUNTO DE CARDS -->
+            <div class="container-fluid p-0">
+                <div class="row g-3">
+
+                    <!-- 1º QTD VENDIDA -->
+                    <div class="col-6 col-lg">
+                        <div class="card-maxi d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="card-title text-uppercase">Qtd. Vendida</span>
+                                <img src="~/assets/icons/icone-dollar.svg" class="card-icon" alt="">
+                            </div>
+                            <h3 class="card-value" id="val-qtd-venda">@(h?.TotalVendas.ToString() ?? "—")</h3>
+                        </div>
+                    </div>
+
+                    <!-- 2º FATURAMENTO -->
+                    <div class="col-6 col-lg">
+                        <div class="card-maxi d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="card-title text-uppercase">Faturamento</span>
+                                <img src="~/assets/icons/icone-pagamento.svg" class="card-icon" alt="">
+                            </div>
+                            <h3 class="card-value" id="val-faturamento">@DashboardModel.Dinheiro(h?.TotalFaturado)</h3>
+                        </div>
+                    </div>
+
+                    <!-- 3º CUSTO (Escondido no Mobile) -->
+                    <div class="col-6 col-lg d-none d-lg-block">
+                        <div class="card-maxi d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="card-title text-uppercase">Custo</span>
+                                <img src="~/assets/icons/icone-recibo.svg" class="card-icon" alt="">
+                            </div>
+                            <h3 class="card-value" id="val-custo">@DashboardModel.Dinheiro(h?.TotalCusto)</h3>
+                        </div>
+                    </div>
+
+                    <!-- 4º LUCRO R$ -->
+                    <div class="col-6 col-lg">
+                        <div class="card-maxi d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="card-title text-uppercase">Lucro R$</span>
+                                <img src="~/assets/icons/icone-tendencia.svg" class="card-icon" alt="">
+                            </div>
+                            <h3 class="card-value" id="val-lucro-rs">@DashboardModel.Dinheiro(h?.LucroBruto)</h3>
+                        </div>
+                    </div>
+
+                    <!-- 5º LUCRO % -->
+                    <div class="col-6 col-lg">
+                        <div class="card-maxi d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="card-title text-uppercase">Lucro %</span>
+                                <img src="~/assets/icons/icone-analise.svg" class="card-icon" alt="">
+                            </div>
+                            <h3 class="card-value" id="val-lucro-pct">@DashboardModel.Margem(h)</h3>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Subtítulo exclusivo para Mobile -->
+            <p class="subtitulo-secao d-md-none mb-0">Histórico do Período</p>
+
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <p class="subtitulo-secao my-0">Período</p>
+
+                <!-- FILTROS: trocar o mês ou o ano recarrega a página com o período na URL -->
+                <form method="get" class="d-flex gap-2" id="formPeriodo">
+                    <select id="filtro-mes" name="mes" class="seletor-periodo" onchange="this.form.submit()">
+                        @for (var m = 1; m <= 12; m++)
+                        {
+                            <option value="@m" selected="@(m == Model.Mes)">@meses[m - 1]</option>
+                        }
+                    </select>
+
+                    <select id="filtro-ano" name="ano" class="seletor-periodo" onchange="this.form.submit()">
+                        @foreach (var ano in Model.Anos)
+                        {
+                            <option value="@ano" selected="@(ano == Model.Ano)">@ano</option>
+                        }
+                    </select>
+                </form>
+            </div>
+
+            <!-- Subtítulo de Ajuda (Apenas Mobile) -->
+            <p class="hint-deslize d-lg-none">← deslize para ver mais →</p>
+
+            <!-- 2º CONJUNTO DE CARDS -->
+            <div class="scroll-horizontal mt-1">
+                <!-- 1º QTD VENDIDA -->
+                <div class="card-historico" id="card-hist-qtd">
+                    <span class="title">Qtd. Vendida</span>
+                    <h4 class="value">@(p?.TotalVendas.ToString() ?? "—")</h4>
+                </div>
+
+                <!-- 2º FATURAMENTO -->
+                <div class="card-historico" id="card-hist-faturamento">
+                    <span class="title">Faturamento</span>
+                    <h4 class="value text-nowrap">@DashboardModel.Dinheiro(p?.TotalFaturado)</h4>
+                </div>
+
+                <!-- 3º CUSTO -->
+                <div class="card-historico" id="card-hist-custo">
+                    <span class="title">Custo</span>
+                    <h4 class="value text-nowrap text-danger">@DashboardModel.Dinheiro(p?.TotalCusto)</h4>
+                </div>
+
+                <!-- 4º CONSUMIDOS -->
+                <div class="card-historico" id="card-hist-consumidos">
+                    <span class="title">Consumidos</span>
+                    <h4 class="value">@(Model.ConsumidosNoPeriodo?.ToString() ?? "—")</h4>
+                </div>
+
+                <!-- 5º LUCRO R$ -->
+                <div class="card-historico" id="card-hist-lucro-rs">
+                    <span class="title">Lucro R$</span>
+                    <h4 class="value text-nowrap">@DashboardModel.Dinheiro(p?.LucroBruto)</h4>
+                </div>
+
+                <!-- 6º LUCRO % -->
+                <div class="card-historico" id="card-hist-lucro-pct">
+                    <span class="title">Lucro %</span>
+                    <h4 class="value">@DashboardModel.Margem(p)</h4>
+                </div>
+
+                <!-- 7º LUCRO HISTÓRICO -->
+                <div class="card-historico" id="card-hist-lucro-historico">
+                    <span class="title">Lucro Histórico</span>
+                    <h4 class="value text-nowrap">@DashboardModel.Dinheiro(Model.LucroHistorico)</h4>
+                </div>
+            </div>
+
+            <div class="row g-4 mt-2 mb-4 mx-0 w-100">
+
+                <!-- ESQUERDA: Avisos -->
+                <div class="col-12 col-lg-4 d-flex flex-column">
+                    <p class="subtitulo-secao mt-0 mb-3">Avisos</p>
+
+                    <div class="d-flex flex-column gap-4 flex-grow-1">
+
+                        <!-- CARD 1: Estoque Baixo -->
+                        <div class="card-maxi d-flex flex-column h-auto p-0 overflow-hidden">
+                            <!-- Cabeçalho com linha de ponta a ponta -->
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                                <span class="titulo-card-interno">Estoque Baixo</span>
+                                <a href="/Estoque" class="link-card">Ver estoque &rarr;</a>
+                            </div>
+                            <!-- Corpo com padding -->
+                            <div class="flex-grow-1 d-flex flex-column justify-content-center px-3 pb-3" id="dashboard-estoque-baixo">
+                                @if (Model.EstoqueBaixo.Count == 0)
+                                {
+                                    <div class="item-lista"><span class="estoque-nome">Nenhum produto com estoque baixo</span></div>
+                                }
+                                @foreach (var item in Model.EstoqueBaixo)
+                                {
+                                    <div class="item-lista">
+                                        <span class="estoque-nome">@item.Nome</span>
+                                        <span class="badge-estoque" data-qtd="@item.Quantidade">@item.Quantidade un.</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- CARD 2: Entregas de Hoje -->
+                        <div class="card-maxi d-flex flex-column h-auto p-0 overflow-hidden">
+                            <!-- Cabeçalho com linha de ponta a ponta -->
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                                <span class="titulo-card-interno">Entregas de Hoje</span>
+                                <a href="/Entregas" class="link-card">Ver todas &rarr;</a>
+                            </div>
+                            <!-- Corpo com padding -->
+                            <div class="flex-grow-1 d-flex flex-column justify-content-center px-3 pb-3" id="dashboard-entregas-hoje">
+                                @if (Model.EntregasHoje.Count == 0)
+                                {
+                                    <div class="item-lista"><span class="entrega-nome">Nenhuma entrega para hoje</span></div>
+                                }
+                                @foreach (var v in Model.EntregasHoje)
+                                {
+                                    <div class="item-lista">
+                                        <div>
+                                            <span class="entrega-nome">@v.NomeCliente</span>
+                                            <p class="entrega-end mb-0">@(v.Entrega!.TipoEntrega == TipoEntrega.Entrega ? "Entrega" : "Retirada")</p>
+                                        </div>
+                                        <span class="badge-hora">@(string.IsNullOrEmpty(v.Entrega.Horario) ? "--:--" : v.Entrega.Horario)</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- DIREITA: Rankings -->
+                <div class="col-12 col-lg-8 d-flex flex-column">
+                    <p class="subtitulo-secao mt-0 mb-3">Rankings do Período</p>
+
+                    <div class="row g-4 flex-grow-1">
+
+                        <!-- CARD 3: Top 3 Clientes -->
+                        <div class="col-12 col-lg-5">
+                            <div class="card-maxi h-100 p-0 overflow-hidden">
+                                <div class="p-3 border-bottom">
+                                    <span class="titulo-card-interno">Top 3 Clientes</span>
+                                </div>
+                                <div id="dashboard-top-clientes">
+                                    @if (!Model.VeFinanceiro)
+                                    {
+                                        <div class="cliente-item"><span class="cliente-nome">Disponível para administradores</span></div>
+                                    }
+                                    else if (Model.TopClientes.Count == 0)
+                                    {
+                                        <div class="cliente-item"><span class="cliente-nome">Sem dados no período</span></div>
+                                    }
+                                    @foreach (var c in Model.TopClientes)
+                                    {
+                                        <div class="cliente-item">
+                                            <div class="cliente-pos">@c.Posicao</div>
+                                            <span class="cliente-nome">@c.NomeCliente</span>
+                                            <span class="cliente-val">@PainelFormatos.Moeda(c.TotalGasto)</span>
+                                            <span class="cliente-qtd">@c.QuantidadeCompras compras</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 4: Top 5 Produtos -->
+                        <div class="col-12 col-lg-7">
+                            <div class="card-maxi h-100 p-0 overflow-hidden">
+                                <!-- Cabeçalho com linha de ponta a ponta -->
+                                <div class="p-3 border-bottom">
+                                    <span class="titulo-card-interno">Top 5 Produtos</span>
+                                </div>
+
+                                <!-- Corpo com padding -->
+                                <div class="px-3 pb-3 pt-2">
+                                    <div class="grid-produto-head text-uppercase">
+                                        <span></span>
+                                        <span>Produto</span>
+                                        <span class="text-end">Faturado</span>
+                                        <span class="text-end">Qtd</span>
+                                    </div>
+
+                                    <div id="dashboard-top-produtos">
+                                        @if (!Model.VeFinanceiro)
+                                        {
+                                            <p class="text-muted mb-0 px-1">Disponível para administradores</p>
+                                        }
+                                        else if (Model.TopProdutos.Count == 0)
+                                        {
+                                            <p class="text-muted mb-0 px-1">Sem dados no período</p>
+                                        }
+                                        @for (var i = 0; i < Model.TopProdutos.Count; i++)
+                                        {
+                                            var prod = Model.TopProdutos[i];
+                                            <div class="grid-produto-row">
+                                                <span class="prod-pos">@(i + 1)</span>
+                                                <span class="prod-nome">@prod.NomeProduto</span>
+                                                <span class="prod-fat">@PainelFormatos.Moeda(prod.TotalFaturado)</span>
+                                                <span class="prod-qtd">@prod.QuantidadeVendida</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </main>

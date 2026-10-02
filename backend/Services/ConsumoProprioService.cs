@@ -23,17 +23,20 @@ public class ConsumoProprioService : IConsumoProprioService
     private readonly IConsumoProprioRepository _consumoRepo;
     private readonly IEstoqueRepository _estoqueRepo;
     private readonly IRepository<MovimentacaoEstoque> _movRepo;
+    private readonly IEstoqueService _estoqueService;
     private readonly ILogger<ConsumoProprioService> _logger;
 
     public ConsumoProprioService(
         IConsumoProprioRepository consumoRepo,
         IEstoqueRepository estoqueRepo,
         IRepository<MovimentacaoEstoque> movRepo,
+        IEstoqueService estoqueService,
         ILogger<ConsumoProprioService> logger)
     {
         _consumoRepo = consumoRepo;
         _estoqueRepo = estoqueRepo;
         _movRepo = movRepo;
+        _estoqueService = estoqueService;
         _logger = logger;
     }
 
@@ -69,25 +72,28 @@ public class ConsumoProprioService : IConsumoProprioService
         if (request.Quantidade <= 0)
             throw new InvalidOperationException("A quantidade deve ser maior que zero.");
 
-        if (estoque.Quantidade < request.Quantidade)
-            throw new InvalidOperationException(
-                $"Estoque insuficiente para consumo próprio. Disponível: {estoque.Quantidade}, Solicitado: {request.Quantidade}.");
-
-        // 3. Deduz do estoque (sem gerar venda)
-        estoque.Quantidade -= request.Quantidade;
-        _estoqueRepo.Update(estoque);
-
-        // 4. Registra movimentação de saída de estoque com motivo "Consumo Próprio"
-        //    Isso mantém rastreabilidade no histórico de movimentações
-        var movimentacao = new MovimentacaoEstoque
+        // 3 e 4. Deduz do estoque (sem gerar venda) e registra a movimentação — pela baixa atômica do
+        //       EstoqueService, a mesma regra das vendas: confere o saldo no próprio UPDATE, então um
+        //       consumo e uma venda simultâneos nunca deixam o estoque negativo.
+        EstoqueResponse? depois;
+        try
         {
-            EstoqueId = estoque.Id,
-            Tipo = TipoMovimentacao.Saida,
-            Quantidade = request.Quantidade,
-            Motivo = $"Consumo Próprio — {request.Observacao ?? "Sem observação"}",
-            Data = DateTime.Now
-        };
-        await _movRepo.AddAsync(movimentacao);
+            depois = await _estoqueService.RegistrarMovimentacaoAsync(new MovimentacaoEstoqueRequest
+            {
+                EstoqueId = estoque.Id,
+                Tipo = TipoMovimentacao.ConsumoProprio,
+                Quantidade = request.Quantidade,
+                Motivo = $"Consumo Próprio — {request.Observacao ?? "Sem observação"}"
+            });
+        }
+        catch (InvalidOperationException)
+        {
+            var disponivel = (await _estoqueService.GetByProdutoIdAsync(request.ProdutoId))?.Quantidade ?? 0;
+            throw new InvalidOperationException(
+                $"Estoque insuficiente para consumo próprio. Disponível: {disponivel}, Solicitado: {request.Quantidade}.");
+        }
+        // Só leitura: o estoque rastreado não é alterado (o SaveChanges abaixo regravaria a quantidade).
+        var restante = depois?.Quantidade ?? estoque.Quantidade - request.Quantidade;
 
         // 5. Cria o registro de ConsumoProprio (tabela separada para histórico dedicado)
         var consumo = new ConsumoProprio
@@ -104,17 +110,17 @@ public class ConsumoProprioService : IConsumoProprioService
         await _consumoRepo.SaveChangesAsync();
 
         // 7. Alerta no log se estoque ficou abaixo do mínimo
-        if (estoque.Quantidade <= estoque.AlertaMinimo)
+        if (restante <= estoque.AlertaMinimo)
             _logger.LogWarning(
                 "[ConsumoProprio] Estoque baixo após consumo. ProdutoId={ProdutoId}, Qtd={Qtd}, AlertaMinimo={Min}",
-                estoque.ProdutoId, estoque.Quantidade, estoque.AlertaMinimo);
+                estoque.ProdutoId, restante, estoque.AlertaMinimo);
 
         _logger.LogInformation(
             "[ConsumoProprio] Consumo registrado. ProdutoId={ProdutoId}, Qtd={Qtd}, UsuarioId={UserId}",
             request.ProdutoId, request.Quantidade, usuarioId);
 
         // 8. Retorna resposta enriquecida (carrega produto para ter o nome)
-        var produtoNome = estoque.Produto?.Nome ?? "N/A";
+        var produtoNome = estoque.Produto?.NomeCompleto ?? "N/A";
 
         return new ConsumoProprioResponse
         {
@@ -126,7 +132,7 @@ public class ConsumoProprioService : IConsumoProprioService
             UsuarioId = consumo.UsuarioId,
             NomeUsuario = string.Empty, // preenchido no controller via User.Identity
             Observacao = consumo.Observacao,
-            EstoqueRestante = estoque.Quantidade
+            EstoqueRestante = restante
         };
     }
 
@@ -140,7 +146,7 @@ public class ConsumoProprioService : IConsumoProprioService
         Id = c.Id,
         Data = c.Data,
         ProdutoId = c.ProdutoId,
-        NomeProduto = c.Produto?.Nome ?? "N/A",
+        NomeProduto = c.Produto?.NomeCompleto ?? "N/A",
         Quantidade = c.Quantidade,
         UsuarioId = c.UsuarioId,
         NomeUsuario = c.Usuario?.Nome ?? "N/A",

@@ -37,7 +37,7 @@ public class AutoMapperProfile : Profile
             .ForMember(d => d.Itens, o => o.MapFrom(s => s.ItensVenda));
 
         CreateMap<ItemVenda, ItemVendaResponse>()
-            .ForMember(d => d.NomeProduto, o => o.MapFrom(s => s.Produto != null ? s.Produto.Nome : string.Empty));
+            .ForMember(d => d.NomeProduto, o => o.MapFrom(s => s.Produto != null ? s.Produto.NomeCompleto : string.Empty));
 
         // ── Pagamento (+ StatusPagamento, + DataPagamento) ────────────────────
         CreateMap<Pagamento, PagamentoResponse>();
