@@ -2,9 +2,9 @@
 
 Aplicativo de compras (Flutter) para os clientes da Maxi Massas: login,
 cardápio de produtos, carrinho, finalização de pedido e confirmação —
-construídos com a mesma identidade visual do site (`frontend/`) — vermelho
+construídos com a mesma identidade visual do painel web — vermelho
 da marca `#9A1006`, tipografia Inter e os mesmos componentes (inputs,
-botões, chips) do `frontend/css/componentes.css`.
+botões, chips) do `backend/wwwroot/css/componentes.css`.
 
 O app é **mobile-first e mobile-only**: mesmo testado numa janela larga
 (Chrome/Windows desktop), o conteúdo fica centralizado numa largura fixa de
@@ -28,7 +28,7 @@ app_cliente/
 └── lib/
     ├── main.dart                 # MultiProvider + rotas nomeadas (/login, /produtos, /carrinho)
     ├── core/
-    │   ├── app_colors.dart          # paleta extraída de frontend/css/componentes.css
+    │   ├── app_colors.dart          # paleta extraída de backend/wwwroot/css/componentes.css
     │   ├── app_text_styles.dart     # tipografia (Inter) espelhando as classes *-login e de produto
     │   ├── app_assets.dart          # caminhos de assets centralizados
     │   ├── formatters.dart          # preço (R$), data/hora
@@ -123,3 +123,32 @@ totais); checkout (alternância de entrega/retirada, validação condicional
 do endereço, taxa de entrega condicional, "usar endereço do perfil"); e a
 tela de confirmação (seções condicionais por tipo de entrega/pagamento,
 navegação dos botões de ação).
+
+## Gerar o APK (Android)
+
+O app de Android é um arquivo `.apk`, instalado direto no celular (sem a Play Store).
+
+**Uma vez na máquina:**
+1. Instale o [Android Studio](https://developer.android.com/studio) e abra uma vez (ele instala o Android SDK).
+2. Rode `flutter doctor --android-licenses` e aceite as licenças.
+3. No Windows, ative o **Modo de desenvolvedor** (`start ms-settings:developers`): os plugins precisam de links simbólicos.
+
+**Cada versão:**
+
+```bash
+cd app_cliente
+flutter build apk --release --dart-define=API_BASE_URL=https://ENDERECO-PUBLICO-DA-API/api
+# arquivo gerado: build/app/outputs/flutter-apk/app-release.apk
+```
+
+- `API_BASE_URL` precisa ser um endereço que o **celular** alcance (Azure, túnel ou o IP do PC na
+  mesma rede) — `localhost` só funciona no próprio computador. Sem ela, o app abre com dados de demonstração.
+- A cada versão nova, aumente `version:` no `pubspec.yaml` (ex.: `1.0.1+2`); o Android só atualiza
+  um app instalado se o número depois do `+` for maior.
+- **Assinatura:** sem `android/key.properties`, o APK sai assinado com a chave de debug (serve para testes).
+  Para distribuir de verdade, crie uma chave (`keytool -genkey -v -keystore maximassas.jks -keyalg RSA
+  -keysize 2048 -validity 10000 -alias maximassas`) e o `android/key.properties` com `storeFile`,
+  `storePassword`, `keyAlias` e `keyPassword`. Guarde a chave em lugar seguro e **nunca** no git:
+  sem ela não é possível publicar atualizações do app.
+- Ícone: imagens em `assets/icon/`; depois de trocar, rode `dart run flutter_launcher_icons`.
+- Identificador do app: `com.maximassas.cliente` (`android/app/build.gradle.kts`).

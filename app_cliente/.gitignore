@@ -12,10 +12,11 @@
 .vscode/
 *.iml
 
-# Platform folders (gerados por `flutter create .`)
-/android/
+# Platform folders (gerados por `flutter create .`). A android/ é versionada: tem o nome,
+# o ícone e o identificador do app (o android/.gitignore deixa de fora a chave de assinatura).
 /ios/
 /web/
 /windows/
 /linux/
 /macos/
+
