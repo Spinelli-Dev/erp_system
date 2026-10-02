@@ -47,3 +47,5 @@ Thumbs.db
 # =========================
 *.sql.bak
 *.backup
+# E-mails gravados pelo EmailSettings:MockMode (contêm links e códigos de redefinição de senha)
+backend/EmailsTeste/

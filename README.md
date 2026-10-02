@@ -51,47 +51,37 @@ Fornecer uma solução integrada para:
 
 ## 🛠️ Tecnologias Utilizadas
 
-### Frontend
-- HTML5
-- CSS3
-- JavaScript
+### Painel web (gestores e operadores)
+- ASP.NET Core 8 Razor Pages (renderizado no servidor), Bootstrap 5
 
-### Backend
-- C# (.NET)
+### Backend / API
+- ASP.NET Core 8 (C#), Entity Framework Core
+
+### App do cliente
+- Flutter (Android, iOS e web), layout exclusivo para celular
 
 ### Banco de Dados
-- MySQL
+- SQL Server
 
 ---
 
 ## 🏗️ Estrutura do Projeto
 
 ```
-erp-project/
+erp_system/
 │
-├── docs/
-│   ├── README.md
-│   ├── github-guide.md
-│   └── architecture.md
+├── backend/                 → API + painel web (um único projeto ASP.NET Core)
+│   ├── Controllers/         → API REST (/api/... e /api/app/... para o app)
+│   ├── Pages/               → painel web em Razor Pages
+│   ├── Services/            → regras de negócio
+│   ├── Models/ DTOs/ Data/  → entidades, contratos e EF Core (AppDbContext)
+│   ├── Migrations/          → evolução do banco (EF Core)
+│   └── wwwroot/             → CSS, JS e imagens do painel
 │
-├── frontend/
-│   ├── index.html
-│   ├── pages/
-│   ├── css/
-│   ├── js/
-│   └── assets/
+├── app_cliente/             → app Flutter do cliente (cardápio, pedidos, conta)
 │
-├── backend/
-│   ├── controllers/
-│   ├── services/
-│   ├── models/
-│   └── Program.cs
-│
-├── database/
-│   ├── scripts/
-│   ├── schema.sql
-│   └── seed.sql
-│
+├── database/                → scripts SQL de apoio
+├── docs/                    → documentação
 ├── .gitignore
 └── README.md
 ```
@@ -100,11 +90,22 @@ erp-project/
 
 ## 🚀 Como Executar o Projeto
 
-> ⚠️ Em definição
+**Backend + painel** (requer .NET 8 e SQL Server local com o banco `MaxiMassasDB`):
 
-O sistema será acessado via navegador web.
+```bash
+cd backend
+dotnet run --launch-profile https
+# painel: https://localhost:5001   ·   Swagger: https://localhost:5001/swagger
+```
 
-Instruções detalhadas de execução serão adicionadas nas próximas versões.
+**App do cliente** (requer Flutter):
+
+```bash
+cd app_cliente
+flutter run -d chrome --dart-define=API_BASE_URL=https://localhost:5001/api
+```
+
+Sem `API_BASE_URL`, o app roda com dados de demonstração.
 
 ---
 
@@ -126,7 +127,7 @@ Instruções detalhadas de execução serão adicionadas nas próximas versões.
 ## 💡 Diferenciais
 
 - Arquitetura organizada
-- Separação clara entre frontend, backend e banco de dados
+- Separação clara entre painel web, API, app do cliente e banco de dados
 - Uso de boas práticas com Git e GitHub
 - Trabalho colaborativo em equipe
 
