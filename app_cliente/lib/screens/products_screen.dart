@@ -5,6 +5,7 @@ import '../core/app_assets.dart';
 import '../core/app_colors.dart';
 import '../core/app_text_styles.dart';
 import '../models/product.dart';
+import '../navigation/atualizar_cardapio.dart';
 import '../providers/product_provider.dart';
 import '../widgets/category_chip.dart';
 import '../widgets/product_card.dart';
@@ -103,24 +104,30 @@ class ProductsScreen extends StatelessWidget {
   }
 
   Widget _buildGrid(BuildContext context, List<Product> produtos) {
-    return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      itemCount: produtos.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 14,
-        crossAxisSpacing: 14,
-        childAspectRatio: 0.62,
+    // Puxar para baixo busca estoque e preço atuais (e ajusta o carrinho).
+    return RefreshIndicator(
+      color: AppColors.primary,
+      onRefresh: () => atualizarCardapioECarrinho(context),
+      child: GridView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+        itemCount: produtos.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 14,
+          crossAxisSpacing: 14,
+          childAspectRatio: 0.62,
+        ),
+        itemBuilder: (context, index) {
+          final produto = produtos[index];
+          return ProductCard(
+            product: produto,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => ProductDetailScreen(product: produto)),
+            ),
+          );
+        },
       ),
-      itemBuilder: (context, index) {
-        final produto = produtos[index];
-        return ProductCard(
-          product: produto,
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => ProductDetailScreen(product: produto)),
-          ),
-        );
-      },
     );
   }
 

@@ -9,6 +9,7 @@ import '../models/product.dart';
 import '../navigation/app_navigation.dart';
 import '../providers/cart_provider.dart';
 import '../providers/navigation_provider.dart';
+import '../providers/product_provider.dart';
 import '../widgets/app_button.dart';
 import '../widgets/product_image.dart';
 import '../widgets/quantity_stepper.dart';
@@ -33,11 +34,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     setState(() => _quantidade = nova);
   }
 
+  /// O produto com estoque e preço atuais: o cardápio é buscado de novo em
+  /// segundo plano (ver `atualizarCardapioECarrinho`), então o que veio ao
+  /// abrir a tela pode estar velho. Sem o cardápio no app (ex.: testes da
+  /// tela isolada), usa o produto recebido.
+  Product _atual({bool ouvir = false}) {
+    try {
+      final cardapio = ouvir ? context.watch<ProductProvider>() : context.read<ProductProvider>();
+      return cardapio.produtoAtual(widget.product.id) ?? widget.product;
+    } on ProviderNotFoundException {
+      return widget.product;
+    }
+  }
+
   /// Quanto ainda cabe no carrinho: o estoque menos o que já está nele.
-  int get _restante => context.read<CartProvider>().restanteEmEstoque(widget.product);
+  int get _restante => context.read<CartProvider>().restanteEmEstoque(_atual());
 
   void _adicionarAoCarrinho() {
-    final product = widget.product;
+    final product = _atual();
     final adicionadas = context.read<CartProvider>().addProduct(product, quantity: _quantidade);
     if (adicionadas == 0) return;
     HapticFeedback.lightImpact();
@@ -68,7 +82,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final product = widget.product;
+    final product = _atual(ouvir: true);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -163,7 +177,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   Widget _buildBarraInferior() {
     // Reconstrói se o carrinho mudar (o que já está nele conta no limite).
-    final restante = context.watch<CartProvider>().restanteEmEstoque(widget.product);
+    final restante = context.watch<CartProvider>().restanteEmEstoque(_atual());
     final esgotadoNoCarrinho = restante == 0;
 
     return SafeArea(
@@ -182,7 +196,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: AppButton(
                 label: esgotadoNoCarrinho
                     ? 'ESTOQUE JÁ NO CARRINHO'
-                    : 'ADICIONAR • ${formatarPreco(widget.product.price * _quantidade)}',
+                    : 'ADICIONAR • ${formatarPreco(_atual().price * _quantidade)}',
                 onPressed: esgotadoNoCarrinho ? null : _adicionarAoCarrinho,
               ),
             ),

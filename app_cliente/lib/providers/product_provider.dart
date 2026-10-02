@@ -53,6 +53,50 @@ class ProductProvider extends ChangeNotifier {
     await loadProducts();
   }
 
+  /// Busca o cardápio de novo para pegar estoque e preço atuais (o painel e
+  /// as vendas no balcão mudam isso o tempo todo). Diferente de
+  /// [loadProducts], não troca a lista por um "carregando": quem está
+  /// olhando o cardápio só vê os números mudarem. Em caso de falha mantém
+  /// a lista que já estava e devolve `false`. Chamadas simultâneas
+  /// aproveitam a mesma requisição.
+  Future<bool> atualizar() {
+    if (_status != ProductLoadStatus.loaded) {
+      return loadProducts().then((_) => _status == ProductLoadStatus.loaded);
+    }
+    return _atualizacao ??= _buscarDeNovo().whenComplete(() => _atualizacao = null);
+  }
+
+  Future<bool>? _atualizacao;
+
+  Future<bool> _buscarDeNovo() async {
+    try {
+      final produtos = await _service.fetchProducts();
+      if (_descartado) return false;
+      _products = produtos;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// O produto como está agora no cardápio (estoque e preço atuais), ou
+  /// `null` se saiu do cardápio.
+  Product? produtoAtual(String id) {
+    for (final p in _products) {
+      if (p.id == id) return p;
+    }
+    return null;
+  }
+
+  bool _descartado = false;
+
+  @override
+  void dispose() {
+    _descartado = true;
+    super.dispose();
+  }
+
   Future<void> _carregar() async {
     _status = ProductLoadStatus.loading;
     _errorMessage = null;

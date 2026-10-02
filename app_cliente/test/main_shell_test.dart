@@ -122,6 +122,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(provider.selectedCategory, categoria);
     expect(provider.status, ProductLoadStatus.loaded);
+    // Voltar ao cardápio busca o estoque de novo; o serviço simulado responde em 0,9 s.
+    await tester.pump(const Duration(seconds: 1));
   });
 
   testWidgets('Badge do carrinho acompanha o CartProvider em tempo real', (tester) async {
@@ -183,6 +185,7 @@ void main() {
     expect(auth.isLoggedIn, isFalse);
     expect(find.text('Acesse sua conta'), findsOneWidget);
     expect(find.byType(NavigationBar), findsNothing);
+    await tester.pump(const Duration(seconds: 1)); // deixa terminar a busca do cardápio iniciada pelo app
   });
 
   testWidgets('Sair da aba Meus Pedidos volta o filtro de período ao padrão', (tester) async {

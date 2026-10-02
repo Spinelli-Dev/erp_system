@@ -174,6 +174,37 @@ class CartProvider extends ChangeNotifier {
     return RepeticaoPedido(unidadesAdicionadas: unidadesAdicionadas, indisponiveis: indisponiveis);
   }
 
+  /// Troca o produto guardado em cada item pelo do [catalogo] recém-buscado
+  /// (estoque e preço atuais). O que saiu do cardápio, ficou indisponível ou
+  /// esgotou sai do carrinho; o que passou do estoque é reduzido ao que há.
+  /// Devolve uma frase por ajuste, para avisar o cliente (vazia se nada mudou
+  /// de quantidade).
+  List<String> sincronizarComCardapio(List<Product> catalogo) {
+    if (_items.isEmpty) return const [];
+    final porId = {for (final produto in catalogo) produto.id: produto};
+    final ajustes = <String>[];
+
+    for (final id in _items.keys.toList()) {
+      final item = _items[id]!;
+      final atual = porId[id];
+      if (atual == null || !atual.isAvailable || (atual.stock ?? 1) <= 0) {
+        _items.remove(id);
+        _idsProcessando.remove(id);
+        ajustes.add('${item.product.name} esgotou e saiu do carrinho');
+        continue;
+      }
+      final estoque = atual.stock;
+      final quantidade = estoque != null && item.quantity > estoque ? estoque : item.quantity;
+      if (quantidade < item.quantity) {
+        ajustes.add('${atual.name}: só ${quantidade == 1 ? 'resta 1 unidade' : 'restam $quantidade unidades'}');
+      }
+      _items[id] = CartItem(product: atual, quantity: quantidade);
+    }
+
+    notifyListeners();
+    return ajustes;
+  }
+
   void clear() {
     _items.clear();
     _idsProcessando.clear();

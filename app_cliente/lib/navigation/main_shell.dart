@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +12,7 @@ import '../screens/cart_screen.dart';
 import '../screens/order_history_screen.dart';
 import '../screens/products_screen.dart';
 import '../screens/profile_screen.dart';
+import 'atualizar_cardapio.dart';
 
 /// Tela principal depois do login: as quatro abas (Produtos, Carrinho,
 /// Meus Pedidos, Perfil) com a barra de navegação inferior.
@@ -17,8 +20,13 @@ import '../screens/profile_screen.dart';
 /// Navegação "flat": trocar de aba não empilha rota nem mostra botão
 /// voltar. As abas ficam vivas num [IndexedStack] depois da primeira
 /// visita, então voltar a uma aba mantém rolagem, filtro de categoria e
-/// pedidos expandidos — e nada é recarregado. A aba selecionada vem do
-/// [NavigationProvider], para outras telas poderem trocá-la.
+/// pedidos expandidos. A aba selecionada vem do [NavigationProvider], para
+/// outras telas poderem trocá-la.
+///
+/// O que muda no servidor é buscado de novo sem trocar a tela por um
+/// "carregando": o histórico ao abrir "Meus Pedidos" e o cardápio (com o
+/// estoque) ao abrir Produtos ou Carrinho, ao voltar para o app e a cada
+/// [intervaloCardapio] enquanto uma dessas abas está aberta.
 class MainShell extends StatefulWidget {
   const MainShell({super.key, this.abaInicial = AppTab.produtos});
 
@@ -28,8 +36,16 @@ class MainShell extends StatefulWidget {
   State<MainShell> createState() => _MainShellState();
 }
 
-class _MainShellState extends State<MainShell> {
+/// De quanto em quanto tempo o cardápio é buscado de novo com o app aberto
+/// em Produtos ou Carrinho.
+const intervaloCardapio = Duration(minutes: 1);
+
+class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   late final NavigationProvider _navegacao = context.read<NavigationProvider>();
+
+  Timer? _relogioCardapio;
+
+  bool get _abaComEstoque => _navegacao.abaAtual == AppTab.produtos || _navegacao.abaAtual == AppTab.carrinho;
 
   /// Abas já abertas ao menos uma vez — só elas são construídas, para não
   /// montar (e disparar cargas de) telas que o usuário nem visitou.
@@ -44,6 +60,23 @@ class _MainShellState extends State<MainShell> {
     _navegacao.addListener(_aoTrocarAba);
     _visitadas.add(widget.abaInicial);
     if (widget.abaInicial == AppTab.pedidos) _atualizarPedidos();
+    WidgetsBinding.instance.addObserver(this);
+    _relogioCardapio = Timer.periodic(intervaloCardapio, (_) {
+      if (_abaComEstoque) _atualizarCardapio();
+    });
+  }
+
+  /// App voltou para a frente (ex.: o cliente foi ao WhatsApp e voltou):
+  /// o estoque pode ter mudado enquanto ele estava fora.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState estado) {
+    if (estado == AppLifecycleState.resumed && _abaComEstoque) _atualizarCardapio();
+  }
+
+  void _atualizarCardapio() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) atualizarCardapioECarrinho(context);
+    });
   }
 
   /// Busca o histórico no backend a cada vez que "Meus Pedidos" abre, para
@@ -57,6 +90,8 @@ class _MainShellState extends State<MainShell> {
 
   @override
   void dispose() {
+    _relogioCardapio?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _navegacao.removeListener(_aoTrocarAba);
     _navegacao.removerShell();
     super.dispose();
@@ -70,6 +105,7 @@ class _MainShellState extends State<MainShell> {
       context.read<OrderHistoryProvider>().resetarFiltro();
     }
     if (aba == AppTab.pedidos && _abaAnterior != AppTab.pedidos) _atualizarPedidos();
+    if (_abaComEstoque && aba != _abaAnterior) _atualizarCardapio();
     _abaAnterior = aba;
     // A SnackBar de "produto adicionado" (com o atalho VER CARRINHO)
     // perde o sentido quando o usuário já está no carrinho.
@@ -106,8 +142,7 @@ class _MainShellState extends State<MainShell> {
         body: _AbasComFade(
           index: abaAtual.index,
           children: [
-            for (final aba in AppTab.values)
-              _visitadas.contains(aba) ? _telaDa(aba) : const SizedBox.shrink(),
+            for (final aba in AppTab.values) _visitadas.contains(aba) ? _telaDa(aba) : const SizedBox.shrink(),
           ],
         ),
         bottomNavigationBar: _BarraNavegacao(

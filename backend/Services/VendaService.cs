@@ -82,8 +82,9 @@ public class VendaService : IVendaService
 
             if (estoqueItem.Quantidade < itemReq.Quantidade)
                 throw new InvalidOperationException(
-                    $"Estoque insuficiente para o produto ID {itemReq.ProdutoId}. " +
-                    $"Disponível: {estoqueItem.Quantidade}, Solicitado: {itemReq.Quantidade}.");
+                    // Nome do produto (com o sabor): a mensagem aparece para o cliente no app e no PDV.
+                    $"Estoque insuficiente para {estoqueItem.Produto?.NomeCompleto ?? $"o produto {itemReq.ProdutoId}"}. " +
+                    $"Disponível: {estoqueItem.Quantidade}, solicitado: {itemReq.Quantidade}.");
         }
 
         // ── FASE 2: Montagem da Venda ─────────────────────────────────────────

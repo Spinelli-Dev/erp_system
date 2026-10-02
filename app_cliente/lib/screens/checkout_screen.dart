@@ -15,6 +15,7 @@ import '../models/user_profile.dart';
 import '../providers/auth_provider.dart';
 import '../providers/cart_provider.dart';
 import '../providers/order_history_provider.dart';
+import '../providers/product_provider.dart';
 import '../services/franchise_service.dart';
 import '../services/order_service.dart';
 import '../widgets/app_button.dart';
@@ -234,6 +235,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       // confirmação não depende mais do CartProvider depois disso.
       context.read<OrderHistoryProvider>().adicionar(confirmacao);
       cart.clear();
+      // O pedido baixou o estoque no servidor: o cardápio passa a mostrar o novo saldo.
+      context.read<ProductProvider>().atualizar();
 
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => OrderConfirmationScreen(pedido: confirmacao)),
@@ -242,6 +245,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(resultado.errorMessage ?? 'Não foi possível enviar o pedido. Tente novamente.')),
       );
+      // A recusa mais comum é estoque (alguém comprou antes): busca o saldo
+      // atual e ajusta o carrinho, para a próxima tentativa já dar certo.
+      final produtos = context.read<ProductProvider>();
+      if (await produtos.atualizar() && mounted) {
+        final ajustes = cart.sincronizarComCardapio(produtos.products);
+        if (ajustes.isNotEmpty && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Carrinho atualizado com o estoque atual:\n${ajustes.join('\n')}'),
+              duration: const Duration(seconds: 6),
+            ),
+          );
+        }
+      }
     }
   }
 
