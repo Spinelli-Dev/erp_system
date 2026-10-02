@@ -19,6 +19,40 @@
         <div class="alert alert-secondary py-2" role="note">Os gráficos de faturamento e lucro estão disponíveis para administradores.</div>
     }
 
+    @if (Model.VeFinanceiro)
+    {
+        <!-- Exportar relatório (Excel / PDF) do período escolhido -->
+        <div class="card border-0 shadow-sm p-3 p-md-4 mb-4">
+            <h5 class="titulo-card-evo m-0">Exportar relatório</h5>
+            <p class="subtitulo-card-evo mb-3">Resumo financeiro, produtos mais vendidos, histórico de vendas e melhores clientes do período.</p>
+
+            @if (Model.ErroExportacao is not null)
+            {
+                <div class="alert alert-danger py-2 small" role="alert">@Model.ErroExportacao</div>
+            }
+
+            @* GET: o navegador baixa o arquivo e continua nesta página. O botão clicado manda handler=Excel ou Pdf. *@
+            <form method="get" class="row g-2 align-items-end">
+                <div class="col-6 col-md-3">
+                    <label class="form-label-custom" for="exportarInicio">Início</label>
+                    <input type="date" class="form-control form-control-custom w-100" id="exportarInicio" name="inicio"
+                           value="@Model.ExportarInicio.ToString("yyyy-MM-dd")" required>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label-custom" for="exportarFim">Fim</label>
+                    <input type="date" class="form-control form-control-custom w-100" id="exportarFim" name="fim"
+                           value="@Model.ExportarFim.ToString("yyyy-MM-dd")" required>
+                </div>
+                <div class="col-6 col-md-3">
+                    <button type="submit" name="handler" value="Excel" class="btn-salvar-custom w-100">Baixar Excel</button>
+                </div>
+                <div class="col-6 col-md-3">
+                    <button type="submit" name="handler" value="Pdf" class="btn-secundario w-100">Baixar PDF</button>
+                </div>
+            </form>
+        </div>
+    }
+
     <!-- Filtros de Botão -->
     <div class="d-flex flex-wrap gap-2 mb-4">
         <button type="button" class="btn-filtro-evo">Dia do Mês</button>

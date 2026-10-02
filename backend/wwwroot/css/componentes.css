@@ -2307,3 +2307,77 @@
 
 /* #endregion */
 
+
+/* ===========================================================
+   AVISO DE PEDIDO NOVO DO APP (wwwroot/js/pedidos-app.js)
+   =========================================================== */
+.badge-pedidos-app {
+    display: inline-block;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    margin-left: 6px;
+    border-radius: 10px;
+    background: #FFC107;
+    color: #111827;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 20px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.badge-pedidos-app[hidden] { display: none; }
+
+#avisos-pedidos-app {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 1080;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: min(340px, calc(100vw - 32px));
+}
+
+.aviso-pedido-app {
+    background: #FFFFFF;
+    border-left: 5px solid #9A1006;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(17, 24, 39, 0.18);
+    padding: 12px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    color: #111827;
+    animation: aviso-pedido-entrar 0.25s ease-out;
+}
+
+.aviso-pedido-app strong { color: #9A1006; }
+
+.aviso-pedido-app-item {
+    display: flex;
+    flex-direction: column;
+    padding: 6px 0;
+    border-top: 1px solid #EEEFF1;
+    color: #111827;
+    text-decoration: none;
+}
+
+.aviso-pedido-app-item:hover { background: #F9F9FA; }
+.aviso-pedido-app-item span:last-child { color: #6B7280; font-size: 0.8125rem; }
+
+.aviso-pedido-app-link { color: #9A1006; font-weight: 600; text-decoration: none; }
+
+.aviso-pedido-app-som {
+    border: none;
+    background: none;
+    padding: 0;
+    color: #6B7280;
+    font-size: 0.8125rem;
+    text-decoration: underline;
+}
+
+@keyframes aviso-pedido-entrar {
+    from { transform: translateY(12px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}

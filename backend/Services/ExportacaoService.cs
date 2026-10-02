@@ -38,12 +38,17 @@ public class ExportacaoService : IExportacaoService
     private readonly IRelatorioService _relatorioService;
     private readonly ILogger<ExportacaoService> _logger;
 
+    // Cores da marca (mesmas do painel e do app).
+    private const string CorMarca = "#9A1006";
+    private const string CorMarcaEscura = "#6E0B04";
+
     public ExportacaoService(IRelatorioService relatorioService, ILogger<ExportacaoService> logger)
     {
         _relatorioService = relatorioService;
         _logger = logger;
 
-        // QuestPDF requer licença declarada (Community é gratuita para uso comercial)
+        // QuestPDF requer licença declarada. Community: gratuita, inclusive uso comercial, para empresas com
+        // faturamento bruto anual abaixo de US$ 1 milhão (acima disso, licença paga).
         QuestPDF.Settings.License = LicenseType.Community;
     }
 
@@ -132,7 +137,7 @@ public class ExportacaoService : IExportacaoService
 
         var headerRow = ws.Row(1);
         headerRow.Style.Font.Bold = true;
-        headerRow.Style.Fill.BackgroundColor = XLColor.Orange;
+        headerRow.Style.Fill.BackgroundColor = XLColor.FromHtml(CorMarca);
         headerRow.Style.Font.FontColor = XLColor.White;
 
         int row = 2;
@@ -163,7 +168,7 @@ public class ExportacaoService : IExportacaoService
 
         var headerRow = ws.Row(1);
         headerRow.Style.Font.Bold = true;
-        headerRow.Style.Fill.BackgroundColor = XLColor.DarkOrange;
+        headerRow.Style.Fill.BackgroundColor = XLColor.FromHtml(CorMarca);
         headerRow.Style.Font.FontColor = XLColor.White;
 
         int row = 2;
@@ -193,7 +198,7 @@ public class ExportacaoService : IExportacaoService
 
         var headerRow = ws.Row(1);
         headerRow.Style.Font.Bold = true;
-        headerRow.Style.Fill.BackgroundColor = XLColor.SteelBlue;
+        headerRow.Style.Fill.BackgroundColor = XLColor.FromHtml(CorMarcaEscura);
         headerRow.Style.Font.FontColor = XLColor.White;
 
         int row = 2;
@@ -236,10 +241,10 @@ public class ExportacaoService : IExportacaoService
                 page.Header().Column(col =>
                 {
                     col.Item().Text("MaxiMassas — Relatório Gerencial")
-                        .SemiBold().FontSize(16).FontColor(Colors.Orange.Darken2);
+                        .SemiBold().FontSize(16).FontColor(CorMarca);
                     col.Item().Text($"Período: {inicio:dd/MM/yyyy} a {fim:dd/MM/yyyy}")
                         .FontSize(10).FontColor(Colors.Grey.Darken1);
-                    col.Item().LineHorizontal(1).LineColor(Colors.Orange.Medium);
+                    col.Item().LineHorizontal(1).LineColor(CorMarca);
                     col.Item().Height(10);
                 });
 
@@ -288,7 +293,7 @@ public class ExportacaoService : IExportacaoService
                             foreach (var h in new[] { "#", "Produto", "Qtd", "Faturado" })
                             {
                                 header.Cell()
-                                    .Background(Colors.Orange.Medium)
+                                    .Background(CorMarca)
                                     .Padding(4)
                                     .Text(h)
                                     .Bold()
@@ -328,7 +333,7 @@ public class ExportacaoService : IExportacaoService
                             foreach (var h in new[] { "#", "Cliente", "Total Gasto", "Compras" })
                             {
                                 header.Cell()
-                                    .Background(Colors.Blue.Medium)
+                                    .Background(CorMarcaEscura)
                                     .Padding(4)
                                     .Text(h)
                                     .Bold()
