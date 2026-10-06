@@ -98,6 +98,14 @@ dotnet run --launch-profile https
 # painel: https://localhost:5001   ·   Swagger: https://localhost:5001/swagger
 ```
 
+Na primeira execução o backend cria o banco e o usuário `admin`. Para carregar o cardápio inicial (produtos, estoque e taxa de entrega), rode uma vez, a partir da raiz do projeto:
+
+```bash
+sqlcmd -S localhost -E -I -d MaxiMassasDB -f 65001 -i database/seed.sql
+```
+
+O script pode ser rodado de novo sem duplicar dados. Clientes, usuários e vendas não vão junto: cada máquina tem o seu próprio banco.
+
 **App do cliente** (requer Flutter):
 
 ```bash
