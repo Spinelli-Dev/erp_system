@@ -167,9 +167,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _confirmarSaida() async {
+    // Só avisa do descarte quando há o que descartar.
+    final carrinhoVazio = context.read<CartProvider>().isEmpty;
     final confirmou = await _confirmar(
       titulo: 'Sair da conta?',
-      mensagem: 'Os itens do seu carrinho serão descartados.',
+      mensagem: carrinhoVazio
+          ? 'Você precisará entrar novamente para fazer pedidos.'
+          : 'Os itens do seu carrinho serão descartados.',
       acao: 'Sair',
     );
     if (confirmou != true || !mounted) return;

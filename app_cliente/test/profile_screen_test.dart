@@ -4,6 +4,7 @@
 
 import 'package:app_cliente/core/validators.dart';
 import 'package:app_cliente/models/address.dart';
+import 'package:app_cliente/models/product.dart';
 import 'package:app_cliente/models/user_profile.dart';
 import 'package:app_cliente/providers/auth_provider.dart';
 import 'package:app_cliente/providers/cart_provider.dart';
@@ -71,11 +72,11 @@ Future<AuthProvider> _sessao({List<Address> enderecos = const [_casa, _trabalho]
   return auth;
 }
 
-Widget _wrap(AuthProvider auth) {
+Widget _wrap(AuthProvider auth, {CartProvider? cart}) {
   return MultiProvider(
     providers: [
       ChangeNotifierProvider.value(value: auth),
-      ChangeNotifierProvider(create: (_) => CartProvider()),
+      ChangeNotifierProvider.value(value: cart ?? CartProvider()),
       ChangeNotifierProvider(create: (_) => OrderHistoryProvider()),
       ChangeNotifierProvider(create: (_) => NavigationProvider()),
     ],
@@ -299,6 +300,28 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(auth.usuario!.addresses, hasLength(2));
+    });
+  });
+
+  group('Sair da conta', () {
+    Future<void> abrirConfirmacao(WidgetTester tester, CartProvider cart) async {
+      await tester.pumpWidget(_wrap(await _sessao(), cart: cart));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(find.text('SAIR DA CONTA'), 200, scrollable: find.byType(Scrollable).first);
+      await tester.tap(find.text('SAIR DA CONTA'));
+      await tester.pumpAndSettle();
+      expect(find.text('Sair da conta?'), findsOneWidget);
+    }
+
+    testWidgets('Com carrinho vazio não fala em descartar itens', (tester) async {
+      await abrirConfirmacao(tester, CartProvider());
+      expect(find.textContaining('serão descartados'), findsNothing);
+    });
+
+    testWidgets('Com itens no carrinho avisa que serão descartados', (tester) async {
+      const produto = Product(id: '1', name: 'Espaguete Tradicional', description: '', price: 24.90, category: 'Massas');
+      await abrirConfirmacao(tester, CartProvider()..addProduct(produto));
+      expect(find.text('Os itens do seu carrinho serão descartados.'), findsOneWidget);
     });
   });
 }

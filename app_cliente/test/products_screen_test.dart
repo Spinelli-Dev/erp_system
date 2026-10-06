@@ -64,8 +64,9 @@ void main() {
     await tester.tap(botaoAdicionar);
     await tester.pump();
 
-    // SnackBar de confirmação.
-    expect(find.textContaining('adicionado ao carrinho'), findsOneWidget);
+    // Feedback só no botão (vira "check"), sem SnackBar cobrindo a tela.
+    expect(find.byIcon(Icons.check), findsOneWidget);
+    expect(find.textContaining('adicionado ao carrinho'), findsNothing);
 
     final cart = Provider.of<CartProvider>(tester.element(find.byType(ProductsScreen)), listen: false);
     expect(cart.totalItems, 1);

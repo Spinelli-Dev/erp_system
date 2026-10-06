@@ -6,9 +6,7 @@ import '../core/app_colors.dart';
 import '../core/app_text_styles.dart';
 import '../core/formatters.dart';
 import '../models/product.dart';
-import '../navigation/app_navigation.dart';
 import '../providers/cart_provider.dart';
-import '../providers/navigation_provider.dart';
 import '../providers/product_provider.dart';
 import '../widgets/app_button.dart';
 import '../widgets/product_image.dart';
@@ -55,28 +53,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final adicionadas = context.read<CartProvider>().addProduct(product, quantity: _quantidade);
     if (adicionadas == 0) return;
     HapticFeedback.lightImpact();
-
-    // Capturada agora: quando o usuário tocar em "VER CARRINHO", esta
-    // tela já terá sido fechada e o `context` não serve mais.
-    final irParaCarrinho = AppNavigation.acaoIrParaAba(context, AppTab.carrinho);
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(
-            '$adicionadas ${adicionadas == 1 ? 'unidade' : 'unidades'} de ${product.name} adicionada${adicionadas == 1 ? '' : 's'} ao carrinho',
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.textDark,
-          action: SnackBarAction(
-            label: 'VER CARRINHO',
-            textColor: Colors.white,
-            onPressed: irParaCarrinho,
-          ),
-        ),
-      );
-
     Navigator.of(context).pop();
   }
 

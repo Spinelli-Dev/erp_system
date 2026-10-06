@@ -6,14 +6,13 @@ import '../core/app_colors.dart';
 import '../core/app_text_styles.dart';
 import '../core/formatters.dart';
 import '../models/product.dart';
-import '../navigation/app_navigation.dart';
 import '../providers/cart_provider.dart';
-import '../providers/navigation_provider.dart';
 import 'product_image.dart';
 
 /// Card de produto do grid. Mostra imagem, nome, descrição breve, preço
 /// destacado e um botão de adicionar com feedback visual (o "+" vira um
-/// check por um instante e o card aciona uma SnackBar de confirmação).
+/// check por um instante; o contador do carrinho na barra inferior também
+/// é atualizado).
 class ProductCard extends StatefulWidget {
   const ProductCard({
     super.key,
@@ -42,22 +41,6 @@ class _ProductCardState extends State<ProductCard> {
     Future.delayed(const Duration(milliseconds: 900), () {
       if (mounted) setState(() => _acabouDeAdicionar = false);
     });
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text('${product.name} adicionado ao carrinho'),
-          duration: const Duration(seconds: 2),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.textDark,
-          action: SnackBarAction(
-            label: 'VER CARRINHO',
-            textColor: Colors.white,
-            onPressed: () => AppNavigation.irParaAba(context, AppTab.carrinho),
-          ),
-        ),
-      );
   }
 
   @override
